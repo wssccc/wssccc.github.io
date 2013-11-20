@@ -51,7 +51,7 @@
                 <div id="input">
                     <div class="form-inline" role="form">
                         <div class="form-group">
-                            <input type="number" class="form-control" id="numberInput" placeholder="Number">
+                            <input type="number" class="form-control" id="numberInput" placeholder="Number" onkeydown="keydown();">
                         </div>
                         <button class="btn btn-default" onclick="guess($('#numberInput').val())">Guess</button>
                         <button class="btn btn-default" onclick="$('#output').empty()">Clear</button>

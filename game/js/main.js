@@ -75,7 +75,13 @@ function guess(num)
 }
 
 
-
+function keydown()
+{
+    if (event.keyCode === 13)
+    {
+        guess($('#numberInput').val());
+    }
+}
 $(document).ready(
         function()
         {
