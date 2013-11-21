@@ -1,0 +1,95 @@
+/*
+ wssccc all rights reserved
+*/
+/* 
+    Created on : 2013-11-21, 22:15:42
+    Author     : wssccc <wssccc@qq.com>
+*/
+
+body{
+    font-family: Georgia,"Times New Roman", Times, serif;
+    background: #fbfbfb;
+    color: #080000;
+}
+
+.breadcrumb
+{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+}
+
+a{
+    text-decoration: none;
+    -webkit-transition: color 0.3s;
+    -moz-transition: color 0.3s;
+    -o-transition: color 0.3s;
+    transition: color 0.3s;
+}
+.archive-heading
+{
+    text-rendering: optimizelegibility;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.archive-content
+{
+    font-size: 18px;
+    color: #080000;
+}
+
+hr{
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.post{
+    margin-bottom: 20px;
+}
+
+.time{
+    font-family: tahoma,Times, serif;
+    color:  #cccccc;
+    margin-bottom: 20px;
+}
+
+.container
+{
+    max-width: 800px;
+}
+
+.post-heading
+{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.post-content
+{
+    font-size: 18px;
+    color: #080000;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizelegibility;
+    margin-bottom: 1em;
+    font-weight: bold;
+}
+
+.site-heading
+{
+    font-size: 50px;
+}
+.site-heading-container
+{
+    margin-bottom: 20px;
+}
+
+.footer
+{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+    font-style: italic;
+}
