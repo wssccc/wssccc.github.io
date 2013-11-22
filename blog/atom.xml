@@ -2,13 +2,33 @@
         <title><![CDATA[wssccc in action]]></title>
         <link href="http://wssccc.github.io/atom.xml" rel="self"/>
         <link href="http://wssccc.github.io/"/>
-        <updated>2013-11-22 08:08:20</updated>
+        <updated>2013-11-22 11:55:10</updated>
         <id>http://wssccc.github.io/</id>
         <author>
             <name><![CDATA[wssccc]]></name>
         </author>
         <generator uri="http://wssccc.github.io/">wsc_blog_generator</generator>
                     <entry>
+                <title type="html"><![CDATA[为什么使用github.io]]></title>
+                <link href="http://wssccc.github.io/blog/posts/why-github/"/>
+                <updated>2013-11-22 17:36</updated>
+                <id>http://wssccc.github.io/blog/posts/why-github/</id>
+                <content type="html"><![CDATA[<p></p><p>以前用过很多个blog，总结一下
+<br/><h2>QQ空间
+</h2>在里面写东西总感觉怪怪的……
+<br/><h2>新浪博客
+</h2>我应该是很早的一批用户了，那个时候新浪博客还不能选择个性网址，大概到我真的有东西写的时候，它的广告已经不能忍受了
+<br/><h2>百度空间
+</h2>速度很快，用了5年左右，最大的缺点是不能导出数据
+<br/><h2>点点
+</h2>买了域名之后就转到了点点，后来点点评论需要登录，就没再用了
+<br/><h2>lofter
+</h2>lofter和点点其实差不太多，里面都是搞摄影的文艺青年
+<br/><h2>cnblogs
+</h2>博客园也用过一段时间
+<br/></p><p>等会儿继续……<br/></p>]]></content>
+            </entry>
+                        <entry>
                 <title type="html"><![CDATA[搭好了github的博客]]></title>
                 <link href="http://wssccc.github.io/blog/posts/hello/"/>
                 <updated>2013-11-22</updated>
