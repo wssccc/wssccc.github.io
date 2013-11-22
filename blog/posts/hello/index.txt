@@ -13,3 +13,5 @@
 ..commit
 
 多说的评论框还是有点奇怪，改天自己弄一个
+
+<a href="http://wssccc.github.io/game/index.html">一个小游戏</a>
