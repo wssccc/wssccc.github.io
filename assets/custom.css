@@ -35,7 +35,8 @@ a{
 
 .archive-content
 {
-    font-size: 2em;
+    font-size: 18px;
+    line-height: 29px;
     color: #080000;
 }
 
@@ -68,7 +69,8 @@ hr{
 
 .post-content
 {
-    font-size: 2em;
+    font-size: 18px;
+    line-height: 29px;
     color: #080000;
 }
 
@@ -81,6 +83,8 @@ h1, h2, h3, h4, h5, h6 {
 .site-heading
 {
     font-size: 39px;
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
 }
 .site-heading-container
 {
@@ -90,6 +94,6 @@ h1, h2, h3, h4, h5, h6 {
 .footer
 {
     font-family: "Times New Roman", Times, serif;
-    font-size: 16px;
+    font-size: 15px;
     font-style: italic;
 }
