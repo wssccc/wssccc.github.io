@@ -27,27 +27,37 @@
             <div>
             </div>
             <div id="posts" class="container">
-                <div class="post" >
-                    <p>
-                        <a href="blog/">
-                            <img src ="assets/shione.jpg" alt="shione yukawa" style="width: 100%;max-width: 500px;"/>
-                        </a>
-                    </p>
-                    <p>
-                        <a href="blog/" style="margin-right: 10px">Blog</a>
-                        <a href="blog/static/about/" style="margin-right: 10px">About</a>
-                        <a href="blog/static/links/" style="margin-right: 10px">Links</a>
-                    </p>
+                <div class="row" >
+                    <div class="col-md-7">
+                        <div class="" style="text-align: center">
+                            <p>
+                                <a href="blog/">
+                                    <img id="cover-img" src ="" alt="cover" style="max-width: 100%; max-height:  500px;"/>
+                                </a>
+                            </p>
+                        </div>
+                        <p>
+                            <a href="blog/" style="margin-right: 10px">Blog</a>
+                            <a href="blog/static/about/" style="margin-right: 10px">About</a>
+                            <a href="blog/static/links/" style="margin-right: 10px">Links</a>
+                        </p>
+                    </div>
+                    <div class="col-md-5">
+                        <p id="desc-heading">COVER STORY</p>
+                        <p id="desc">
+                        </p>
+                    </div>
                 </div>
             </div>
             <hr/>
             <div class="footer">
-                <p>Copyright &COPY;<a href="<?php echo $site_root ?>/blog/static/about/">wssccc</a> 2013 using wsc_blog_generator <a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nd/3.0/80x15.png" /></a></p>
+                <p>Copyright &COPY;<a href="blog/static/about/">wssccc</a> 2013 using wsc_blog_generator <a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/deed.zh"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nd/3.0/80x15.png" /></a></p>
             </div>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/coverinit.js"></script>
     </body>
 </html>
