@@ -69,6 +69,11 @@ hr{
     font-weight: bold;
 }
 
+.tag-heading
+{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 25px;
+}
 .post-content
 {
     font-size: 18px;
@@ -106,4 +111,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .tag_a{
     margin-left: 10px;
+}
+
+.post-content img{
+    max-width: 700px;
+}
+
+.archive-content img{
+    max-height: 300px;
 }
