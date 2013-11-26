@@ -114,7 +114,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post-content img{
-    max-width: 700px;
+    max-width: 100%;
+
 }
 
 .archive-content img{
@@ -126,11 +127,17 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 20px;
     line-height: 30px;
     color: #080000;
-    text-indent: 2em;
+}
+
+#desc:first-letter
+{
+    font-size: 30px;
+    font-weight: bold;
 }
 
 #desc-heading
 {
     font-family:  "Times New Roman", Times, serif;
     font-size: 15px;
+    padding-bottom: 20px;
 }
