@@ -13,6 +13,5 @@ $(document).ready(function()
             $('#desc').html(cover.desc);
             $('body').css('background-color', 'rgb(251,251,251)');
         }
-
     });
 });
