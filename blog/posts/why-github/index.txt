@@ -9,3 +9,4 @@
 目前这个生成工具已经有大部分常用的功能了，tag支持，atom订阅，静态页面等等
 
 <img src="#FIX_PATH#test.jpg">
+图片来源：http://secret.pp.163.com/
