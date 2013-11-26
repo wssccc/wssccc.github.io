@@ -11,7 +11,7 @@ $(document).ready(function()
             var cover = data[sel];
             $('#cover-img').attr('src', cover.img);
             $('#desc').html(cover.desc);
-            $('body').css('background-color', 'rgb(251,251,251)');
+            //$('body').css('background-color', 'rgb(251,251,251)');
         }
     });
 });
