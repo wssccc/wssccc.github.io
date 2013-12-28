@@ -18,7 +18,6 @@
 后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a>
 跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。
 
-<hr>
+
 去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。
 <a href="http://www.yinwang.org/">www.yinwang.org</a>
-<hr>
