@@ -2,7 +2,7 @@
         <title><![CDATA[wssccc in action]]></title>
         <link href="http://wssccc.github.io/atom.xml" rel="self"/>
         <link href="http://wssccc.github.io/"/>
-        <updated>2013-12-28 15:32:55</updated>
+        <updated>2014-02-21 03:57:56</updated>
         <id>http://wssccc.github.io/</id>
         <author>
             <name><![CDATA[wssccc]]></name>
@@ -27,6 +27,32 @@
 <br/></p><p></p><p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。
 <br/><a href="http://www.yinwang.org/">www.yinwang.org</a>
 <br/></p><p></p>]]></content>
+            </entry>
+                        <entry>
+                <title type="html"><![CDATA[饼干君更新了diff]]></title>
+                <link href="http://wssccc.github.io/blog/posts/biscuit-diff/"/>
+                <updated>2013-12-25</updated>
+                <id>http://wssccc.github.io/blog/posts/biscuit-diff/</id>
+                <content type="html"><![CDATA[<p></p><p>去年这个时候开始做饼干君这个微信公共账号，当时的功能只有模糊搜索的聊天功能。
+<br/>后来慢慢加入了查询天气，查询维基等。
+<br/>查询天气功能很欢乐，支持下面的各种问法：
+<br/>今天天气
+<br/>今天北京天气
+<br/>北京明天天气
+<br/>后天天气
+<br/>大后天天气
+<br/>……
+<br/></p><p>前几天顺手写了表达式解析，昨天顺手就加到饼干君里面了。
+<br/>也算是实现了去年的一个愿望 :) 
+<br/>diff是求导的命令，用法是 
+<br/>diff [symbol=x] expr
+<br/></p><p>几个例子
+<br/>diff x^3+sin(x)   //默认是对x求导，所以第一个参数可以省略
+<br/></p><p>diff y x^2+5*y^3 //对y求导，其它symbol被当成常数
+<br/></p><p>附个图吧
+<br/><img src="../../posts/biscuit-diff/biscuit.png">
+<br/></p><p>扫描二维码添加
+<br/><img src="../../posts/biscuit-diff/qrc.jpg"><br/></p>]]></content>
             </entry>
                         <entry>
                 <title type="html"><![CDATA[为什么使用github.io]]></title>
