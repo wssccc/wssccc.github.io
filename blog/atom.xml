@@ -2,36 +2,16 @@
         <title><![CDATA[wssccc in action]]></title>
         <link href="http://wssccc.github.io/atom.xml" rel="self"/>
         <link href="http://wssccc.github.io/"/>
-        <updated>2014-02-21 03:57:56</updated>
+        <updated>2014-02-21 04:00:46</updated>
         <id>http://wssccc.github.io/</id>
         <author>
             <name><![CDATA[wssccc]]></name>
         </author>
         <generator uri="http://wssccc.github.io/">wsc_blog_generator</generator>
                     <entry>
-                <title type="html"><![CDATA[最近在整parser]]></title>
-                <link href="http://wssccc.github.io/blog/posts/about-parsers/"/>
-                <updated>2013-12-25</updated>
-                <id>http://wssccc.github.io/blog/posts/about-parsers/</id>
-                <content type="html"><![CDATA[<p></p><p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。
-<br/>不过前两个部分是妥妥儿的了，所以暂且称之为parser。
-<br/></p><p>和一般的parser不同，这个parser既不是针对特定语言手写的，也不是parser工具生成的。
-<br/>它可以读入词法描述和语法描述，然后再开始parse。
-<br/></p><p>语法分析使用了LALR(1)。本来是准备用parser组合子的，但是java不支持lambda，调试起来也麻烦，
-<br/>当然最重要的原因是不支持左递归……
-<br/></p><p>现在语法分析器已经可以支持error符号的错误恢复，和空产生式了。
-<br/>试用了一些s-exp的语法，工作的还挺好的样子
-<br/></p><p>一直就想做这个东西，后来学编译原理的时候，老师只让我们做了SLR(1)的实验，觉得局限很大，
-<br/>后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a>
-<br/>跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。
-<br/></p><p></p><p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。
-<br/><a href="http://www.yinwang.org/">www.yinwang.org</a>
-<br/></p><p></p>]]></content>
-            </entry>
-                        <entry>
                 <title type="html"><![CDATA[饼干君更新了diff]]></title>
                 <link href="http://wssccc.github.io/blog/posts/biscuit-diff/"/>
-                <updated>2013-12-25</updated>
+                <updated>2014-2-21</updated>
                 <id>http://wssccc.github.io/blog/posts/biscuit-diff/</id>
                 <content type="html"><![CDATA[<p></p><p>去年这个时候开始做饼干君这个微信公共账号，当时的功能只有模糊搜索的聊天功能。
 <br/>后来慢慢加入了查询天气，查询维基等。
@@ -53,6 +33,26 @@
 <br/><img src="../../posts/biscuit-diff/biscuit.png">
 <br/></p><p>扫描二维码添加
 <br/><img src="../../posts/biscuit-diff/qrc.jpg"><br/></p>]]></content>
+            </entry>
+                        <entry>
+                <title type="html"><![CDATA[最近在整parser]]></title>
+                <link href="http://wssccc.github.io/blog/posts/about-parsers/"/>
+                <updated>2013-12-25</updated>
+                <id>http://wssccc.github.io/blog/posts/about-parsers/</id>
+                <content type="html"><![CDATA[<p></p><p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。
+<br/>不过前两个部分是妥妥儿的了，所以暂且称之为parser。
+<br/></p><p>和一般的parser不同，这个parser既不是针对特定语言手写的，也不是parser工具生成的。
+<br/>它可以读入词法描述和语法描述，然后再开始parse。
+<br/></p><p>语法分析使用了LALR(1)。本来是准备用parser组合子的，但是java不支持lambda，调试起来也麻烦，
+<br/>当然最重要的原因是不支持左递归……
+<br/></p><p>现在语法分析器已经可以支持error符号的错误恢复，和空产生式了。
+<br/>试用了一些s-exp的语法，工作的还挺好的样子
+<br/></p><p>一直就想做这个东西，后来学编译原理的时候，老师只让我们做了SLR(1)的实验，觉得局限很大，
+<br/>后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a>
+<br/>跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。
+<br/></p><p></p><p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。
+<br/><a href="http://www.yinwang.org/">www.yinwang.org</a>
+<br/></p><p></p>]]></content>
             </entry>
                         <entry>
                 <title type="html"><![CDATA[为什么使用github.io]]></title>
