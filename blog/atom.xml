@@ -2,7 +2,7 @@
         <title><![CDATA[wssccc in action]]></title>
         <link href="http://wssccc.github.io/atom.xml" rel="self"/>
         <link href="http://wssccc.github.io/"/>
-        <updated>2014-02-28 05:17:33</updated>
+        <updated>2014-02-28 05:18:39</updated>
         <id>http://wssccc.github.io/</id>
         <author>
             <name><![CDATA[wssccc]]></name>
@@ -28,7 +28,7 @@
 <br/></p><p>当时的设想是，饼干君使用脚本语言来实现后台逻辑，这个事情后来不了了之。
 <br/>没有找到合适的脚本语言是一方面，另一个更重要的问题是我想做一个像NekoScript的东西。
 <br/></p><p>这个时候我想起来wolfram alpha，想起了maxima。然后开始尝试从cellular automata和lisp入手。
-<br/>cell automata……只能说太前沿了……
+<br/>cellular automata……只能说太前沿了……
 <br/>对lisp以及functional programming的探索一直持续了很久。看到parser combinator才算知道了一点里面的精妙之处。
 <br/>探索parser的过程中，发现了大神王垠，不过他的blog要辩证的看……
 <br/></p><p>饶了一大圈，最终理解的也就是GEB里面的内容，然后用这个东西完成了符号微分的程序，然后加到了饼干君里面。
