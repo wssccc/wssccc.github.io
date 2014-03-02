@@ -2,13 +2,24 @@
         <title><![CDATA[wssccc in action]]></title>
         <link href="http://wssccc.github.io/atom.xml" rel="self"/>
         <link href="http://wssccc.github.io/"/>
-        <updated>2014-02-28 05:18:39</updated>
+        <updated>2014-03-02 16:48:13</updated>
         <id>http://wssccc.github.io/</id>
         <author>
             <name><![CDATA[wssccc]]></name>
         </author>
         <generator uri="http://wssccc.github.io/">wsc_blog_generator</generator>
                     <entry>
+                <title type="html"><![CDATA[又回cnblogs]]></title>
+                <link href="http://wssccc.github.io/blog/posts/blogs/"/>
+                <updated>2014-3-2</updated>
+                <id>http://wssccc.github.io/blog/posts/blogs/</id>
+                <content type="html"><![CDATA[<p></p><p>wssccc.com被抢注了……究竟是什么人连这个名字都不放过……
+<br/>（╯‵□′）╯︵┴─┴ 掀桌
+<br/>于是还是默默的回cnblogs吧，等域名好了再抽回来……
+<br/></p><p><a href="http://www.cnblogs.com/wssccc/">http://www.cnblogs.com/wssccc/</a>
+<br/></p><p></p>]]></content>
+            </entry>
+                        <entry>
                 <title type="html"><![CDATA[饼干君这一年]]></title>
                 <link href="http://wssccc.github.io/blog/posts/biscuit-of-the-year/"/>
                 <updated>2014-2-22</updated>
