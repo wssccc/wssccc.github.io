@@ -31,92 +31,26 @@
                     <div>
         <ol class="breadcrumb">
             <li><a href="../../../">wssccc</a></li>
-            <li><a href="../../archives/1/">archive</a></li>
-            <li><a href="#">post</a></li>
+            <li><a href="#">about-generator</a></li>
         </ol>
     </div>
     <div id="posts" class="container">
         <div class="post">
-            <div>
-                <a href="index.html" class="post-heading">﻿最近在整parser</a>
-                <span class="time">2013-12-25</span>
-                <hr/>
-            </div>
             <div class="post-content">
-                <p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。</p>
+                <h3>关于blog generator</h3>
 
-<p>不过前两个部分是妥妥儿的了，所以暂且称之为parser。</p>
+<p>wsc&#95;blog&#95;generator是这个博客使用的生成工具，它可以很方便的运行在windows下。</p>
 
-<p>和一般的parser不同，这个parser既不是针对特定语言手写的，也不是parser工具生成的。</p>
+<p>最近加上了markdown支持，不过仍然在开发中，没有发布的计划。</p>
 
-<p>它可以读入词法描述和语法描述，然后再开始parse。</p>
-
-<p>语法分析使用了LALR(1)。本来是准备用parser组合子的，但是java不支持lambda，调试起来也麻烦，</p>
-
-<p>当然最重要的原因是不支持左递归……</p>
-
-<p>现在语法分析器已经可以支持error符号的错误恢复，和空产生式了。</p>
-
-<p>试用了一些s-exp的语法，工作的还挺好的样子</p>
-
-<p>一直就想做这个东西，后来学编译原理的时候，老师只让我们做了SLR(1)的实验，觉得局限很大，</p>
-
-<p>后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a></p>
-
-<p>跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。</p>
-
-<p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。</p>
-
-<p><a href="http://www.yinwang.org/">www.yinwang.org</a></p>
+<p>如果有需要源代码可以联系我</p>
             </div>
             <hr/>
-            <div class="">
-                <p>tags: 
-                                            <a class="tag_a" href="../../tags/E8AEA1E7AE97E69CBA.html">计算机</a>
-                                                <a class="tag_a" href="../../tags/E69D82.html">杂</a>
-                                        </p>
-            </div>
         </div>
-    </div>
-    <div class="">
-        <ul class="pager">
-            <li class="pull-left"><a id="pre-post-archor" href="#">上一篇： <span id="pre-post-title"></span></a></li>
-            <li class="pull-right"><a id="next-post-archor" href="#">下一篇： <span id="next-post-title"></span></a></li>
-        </ul>
-        <script>
-            $(document).ready(function()
-            {
-                $.getJSON('../indexer.json', null, function(data)
-                {
-                    if (data instanceof Array)
-                    {
-                        for (i = 0; i < data.length; i++) {
-                            if (data[i].sname === 'about-parsers')
-                            {
-                                if (i !== 0)
-                                {
-                                    $('#pre-post-archor').attr('href', data[i - 1].url);
-                                    $('#pre-post-title').text(data[i - 1].title);
-                                } else {
-                                    $('#pre-post-title').text('没有了');
-                                }
-                                if (i !== data.length - 1)
-                                {
-                                    $('#next-post-archor').attr('href', data[i + 1].url);
-                                    $('#next-post-title').text(data[i + 1].title);
-                                } else {
-                                    $('#next-post-title').text('没有了');
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-        </script>
     </div>
     <div style="margin-left: 0px;">
         <!-- Duoshuo Comment BEGIN -->
-        <div class="ds-thread" data-thread-key="about-parsers/" data-title="﻿最近在整parser"></div>
+        <div class="ds-thread" data-thread-key="about-generator/" data-title="关于generator"></div>
         <script type="text/javascript">
             var duoshuoQuery = {short_name: "wssccc"};
             (function() {

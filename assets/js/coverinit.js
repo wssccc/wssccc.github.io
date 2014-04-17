@@ -3,7 +3,7 @@
  */
 $(document).ready(function()
 {
-    $.getJSON('assets/covers.json', null, function(data)
+    $.getJSON('assets/covers/covers.json', null, function(data)
     {
         if (data instanceof Array)
         {
