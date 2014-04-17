@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>    <rss version="2.0">
+        <channel>
+            <title>wssccc in action</title>
+            <description>wssccc</description>
+            <link>http://wssccc.github.io/blog/</link>
+            <lastBuildDate>2014-04-17 16:46:11</lastBuildDate>
+            <pubDate>2014-04-17 16:46:11</pubDate>
+                            <item>
+                    <title>饼干君这一年</title>
+                    <link>http://wssccc.github.io/blog/biscuit-of-the-year</link>
+                    <guid>http://wssccc.github.io/blog/biscuit-of-the-year</guid>
+                    <pubDate>2014-2-22</pubDate>
+                    <description><![CDATA[<p>用info命令可以看到到现在为止，饼干君已经存在1年零1月零3天了。</p>
+
+<p>饼干君的诞生是由于以下几个事情：</p>
+
+<ol>
+
+<li>赵伯弄了一个微信公共账号</li>
+
+<li>我通过了SAE高级开发者认证</li>
+
+<li>知道了被玩坏的白丝魔理沙</li>
+
+</ol>
+
+<p>觉得自己也可以实现一个，所以在1月份的时候，用了2个晚上的时间，实现了一个基于语料库的问答系统。</p>
+
+<p>然后凭着仅存的一点php知识，给弄到SAE上跑起来了。</p>
+
+<p>饼干君之后我开始关注一些机器人，后来看到了Moec Core这个东西。http://wiki.oekaki.so/</p>
+
+<p>这是一个神秘的组织……</p>
+
+<p>也就是那个时候看到了NekoScript。</p>
+
+<p>当时的设想是，饼干君使用脚本语言来实现后台逻辑，这个事情后来不了了之。</p>
+
+<p>没有找到合适的脚本语言是一方面，另一个更重要的问题是我想做一个像NekoScript的东西。</p>
+
+<p>这个时候我想起来wolfram alpha，想起了maxima。然后开始尝试从cellular automata和lisp入手。</p>
+
+<p>cellular automata……只能说太前沿了……</p>
+
+<p>对lisp以及functional programming的探索一直持续了很久。看到parser combinator才算知道了一点里面的精妙之处。</p>
+
+<p>探索parser的过程中，发现了大神王垠，不过他的blog要辩证的看……</p>
+
+<p>饶了一大圈，最终理解的也就是GEB里面的内容，然后用这个东西完成了符号微分的程序，然后加到了饼干君里面。</p>
+
+<p>这个符号微分程序还没有到实用的级别，它只是为了证明我也可以写symbolic calculus的东西了。</p>
+]]></description>
+                </item>
+                                <item>
+                    <title>饼干君更新了diff</title>
+                    <link>http://wssccc.github.io/blog/biscuit-diff</link>
+                    <guid>http://wssccc.github.io/blog/biscuit-diff</guid>
+                    <pubDate>2014-2-21</pubDate>
+                    <description><![CDATA[<p>去年这个时候开始做饼干君这个微信公共账号，当时的功能只有模糊搜索的聊天功能。</p>
+
+<p>后来慢慢加入了查询天气，查询维基等。</p>
+
+<p>查询天气功能很欢乐，支持下面的各种问法：</p>
+
+<p>今天天气</p>
+
+<p>今天北京天气</p>
+
+<p>北京明天天气</p>
+
+<p>后天天气</p>
+
+<p>大后天天气</p>
+
+<p>……</p>
+
+<p>前几天顺手写了表达式解析，昨天顺手就加到饼干君里面了。</p>
+
+<p>也算是实现了去年的一个愿望 :) </p>
+
+<p>diff是求导的命令，用法是 </p>
+
+<p>diff [symbol=x] expr</p>
+
+<p>几个例子</p>
+
+<p>diff x^3+sin(x)   //默认是对x求导，所以第一个参数可以省略</p>
+
+<p>diff y x^2+5*y^3 //对y求导，其它symbol被当成常数</p>
+
+<p>附个图吧</p>
+
+<p><img src="biscuit.png" alt="biscuit" /></p>
+
+<p>扫描二维码添加</p>
+
+<p><img src="biscuit_qr.jpg" alt="biscuit_qr" /></p>
+]]></description>
+                </item>
+                                <item>
+                    <title>﻿最近在整parser</title>
+                    <link>http://wssccc.github.io/blog/about-parsers</link>
+                    <guid>http://wssccc.github.io/blog/about-parsers</guid>
+                    <pubDate>2013-12-25</pubDate>
+                    <description><![CDATA[<p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。</p>
+
+<p>不过前两个部分是妥妥儿的了，所以暂且称之为parser。</p>
+
+<p>和一般的parser不同，这个parser既不是针对特定语言手写的，也不是parser工具生成的。</p>
+
+<p>它可以读入词法描述和语法描述，然后再开始parse。</p>
+
+<p>语法分析使用了LALR(1)。本来是准备用parser组合子的，但是java不支持lambda，调试起来也麻烦，</p>
+
+<p>当然最重要的原因是不支持左递归……</p>
+
+<p>现在语法分析器已经可以支持error符号的错误恢复，和空产生式了。</p>
+
+<p>试用了一些s-exp的语法，工作的还挺好的样子</p>
+
+<p>一直就想做这个东西，后来学编译原理的时候，老师只让我们做了SLR(1)的实验，觉得局限很大，</p>
+
+<p>后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a></p>
+
+<p>跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。</p>
+
+<p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。</p>
+
+<p><a href="http://www.yinwang.org/">www.yinwang.org</a></p>
+]]></description>
+                </item>
+                                <item>
+                    <title>﻿为什么使用github.io</title>
+                    <link>http://wssccc.github.io/blog/why-github</link>
+                    <guid>http://wssccc.github.io/blog/why-github</guid>
+                    <pubDate>2013-11-22 17:36</pubDate>
+                    <description><![CDATA[<p>主要原因参考这个 <a href="http://unionx.github.io/blog/2012/12/30/deploy-octopress/">url</a></p>
+
+<p>当然还有其它的好处，比如数据都是自己的，比如可以自己设计界面</p>
+
+<p>目前这个生成工具已经有大部分常用的功能了，tag支持，atom订阅，静态页面等等</p>
+
+<p><img src="#FIX_PATH#test.jpg"></p>
+
+<p>图片来源：http://secret.pp.163.com/</p>
+]]></description>
+                </item>
+                                <item>
+                    <title>搭好了github的博客</title>
+                    <link>http://wssccc.github.io/blog/hello</link>
+                    <guid>http://wssccc.github.io/blog/hello</guid>
+                    <pubDate>2013-11-22</pubDate>
+                    <description><![CDATA[<p>被帝老师影响，也来github凑凑热闹…</p>
+
+<p>不过没有使用octopress，因为ruby的gem在这里好像一直不好使。</p>
+
+<p>于是自己写了一个生成博客的工具，持续更新中</p>
+
+<p><a href="http://wssccc.github.io/game/index.html">一个小游戏</a></p>
+]]></description>
+                </item>
+                        </channel>
+    </rss>
+    
