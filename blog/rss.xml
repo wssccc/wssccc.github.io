@@ -3,13 +3,576 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-04-17 16:50:36</lastBuildDate>
-            <pubDate>2014-04-17 16:50:36</pubDate>
+            <lastBuildDate>2014-04-18 17:45:32</lastBuildDate>
+            <pubDate>2014-04-18 17:45:32</pubDate>
                             <item>
+                    <title>实现自己的脚本语言ngscript之三：语法设计</title>
+                    <link>http://wssccc.github.io/blog/ngscript-part-4</link>
+                    <guid>http://wssccc.github.io/blog/ngscript-part-4</guid>
+                    <pubDate>2014-04-06 13:10</pubDate>
+                    <description><![CDATA[<p>这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。</p>
+
+<p>于是我去读了<a href="http://book.douban.com/subject/25735333/">这本书</a>，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。</p>
+
+<p>于是ngscript就愉快的决定使用类似js语法、编译成字节码了。</p>
+
+<p>这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。</p>
+
+<p>parseroid加上这个描述，就可以分析出ngscript程序的语法树。大概是这个样子</p>
+
+<p><img src="ngscript-ast.png" alt="ngscript-ast.png" /></p>
+
+<p>现在的BNF已经写成下面这个样子了。可能还会不断的改。常用的控制结构和try…catch都有。</p>
+
+<p>生成树之后就是编译成字节码了，这个会在下一篇中详述。</p>
+
+<pre><code>//starter symbol 
+
+%start &lt;program&gt;;
+
+%array &lt;statements&gt; &lt;param_list&gt; &lt;params&gt;;
+
+%equiv &lt;expr&gt; &lt;expr1&gt; &lt;expr2&gt; &lt;expr3&gt; &lt;expr4&gt; &lt;expr5&gt; &lt;expr6&gt; &lt;expr7&gt; &lt;expr8&gt; &lt;nullable_expr&gt;;
+
+%filter semicolon comma;
+
+
+
+&lt;program&gt; ::= &lt;statements&gt;;
+
+//----------------------------------------------------------------------------
+
+//statements is a collection of statement;
+
+&lt;statements&gt; ::= NULL;
+
+&lt;statements&gt; ::= &lt;statement&gt; &lt;statements&gt;;
+
+//----------------------------------------------------------------------------
+
+//statement forms
+
+%equiv &lt;statement&gt; &lt;flow_statement&gt; &lt;expr_statement&gt; &lt;fc_statement&gt;;
+
+&lt;statement&gt; ::= &lt;flow_statement&gt;;
+
+&lt;statement&gt; ::= &lt;expr_statement&gt;;
+
+&lt;statement&gt; ::= &lt;fc_statement&gt;;
+
+&lt;statement&gt; ::= &lt;throw_exception&gt;;
+
+&lt;flow_statement&gt; ::= &lt;function_decl&gt;;
+
+&lt;flow_statement&gt; ::= &lt;if_block&gt;;
+
+&lt;flow_statement&gt; ::= &lt;for_block&gt;;
+
+&lt;flow_statement&gt; ::= &lt;if_else_block&gt;;
+
+&lt;flow_statement&gt; ::= &lt;while_block&gt;;
+
+&lt;flow_statement&gt; ::= &lt;try_block&gt;;
+
+&lt;flow_statement&gt; ::= &lt;switch_block&gt;;
+
+&lt;expr_statement&gt; ::= &lt;expr&gt; semicolon;
+
+&lt;throw_exception&gt; ::= throw &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
+
+&lt;fc_statement&gt; ::= &lt;return_val&gt;;
+
+&lt;fc_statement&gt; ::= &lt;return_void&gt;;
+
+&lt;fc_statement&gt; ::= break semicolon;
+
+&lt;fc_statement&gt; ::= continue semicolon;
+
+&lt;return_val&gt; ::= return &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
+
+&lt;return_void&gt; ::= return semicolon;
+
+//error handling
+
+//&lt;statement&gt; ::= ERROR semicolon;
+
+//----------------------------------------------------------------------------
+
+//details of function declaration
+
+&lt;function_decl&gt; ::= function ident lparen &lt;param_list&gt; rparen lcurly &lt;statements&gt; rcurly
+
+    =&gt;    ident &lt;param_list&gt; &lt;statements&gt;;
+
+&lt;param_list&gt; ::= ident comma &lt;param_list&gt;;
+
+&lt;param_list&gt; ::= ident;
+
+&lt;param_list&gt; ::= NULL;
+
+//----------------------------------------------------------------------------
+
+//details of if block and else
+
+&lt;if_block&gt; ::= if lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly
+
+    =&gt; &lt;expr&gt; &lt;statements&gt; ;
+
+&lt;if_else_block&gt; ::= if lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly else lcurly &lt;statements&gt; rcurly 
+
+    =&gt; &lt;expr&gt; &lt;statements&gt; &lt;statements&gt;;
+
+//----------------------------------------------------------------------------
+
+//details of expr
+
+&lt;expr&gt; ::= &lt;expr&gt; assign &lt;expr1&gt;                =&gt; assign &lt;expr&gt; &lt;expr1&gt;;
+
+&lt;expr&gt; ::= &lt;expr&gt; sub_assign &lt;expr1&gt;            =&gt; sub_assign &lt;expr&gt; &lt;expr1&gt;;
+
+&lt;expr&gt; ::= &lt;expr1&gt;;
+
+&lt;expr1&gt; ::= &lt;expr1&gt; or &lt;expr2&gt;                  =&gt; or &lt;expr1&gt; &lt;expr2&gt;;
+
+&lt;expr1&gt; ::= &lt;expr2&gt;;
+
+&lt;expr2&gt; ::= &lt;expr2&gt; and &lt;expr3&gt;                 =&gt; and &lt;expr2&gt; &lt;expr3&gt;;
+
+&lt;expr2&gt; ::= &lt;expr3&gt;;
+
+&lt;expr3&gt; ::= &lt;expr3&gt; eq &lt;expr4&gt;             =&gt; eq &lt;expr3&gt; &lt;expr4&gt;;
+
+&lt;expr3&gt; ::= &lt;expr3&gt; neq &lt;expr4&gt;          =&gt; neq &lt;expr3&gt; &lt;expr4&gt;;
+
+&lt;expr3&gt; ::= &lt;expr4&gt;;
+
+&lt;expr4&gt; ::= &lt;expr4&gt; gt &lt;expr5&gt;                  =&gt; gt &lt;expr4&gt; &lt;expr5&gt;;
+
+&lt;expr4&gt; ::= &lt;expr4&gt; lt &lt;expr5&gt;                  =&gt; lt &lt;expr4&gt; &lt;expr5&gt;;
+
+&lt;expr4&gt; ::= &lt;expr4&gt; ge &lt;expr5&gt;                  =&gt; ge &lt;expr4&gt; &lt;expr5&gt;;
+
+&lt;expr4&gt; ::= &lt;expr4&gt; le &lt;expr5&gt;                  =&gt; le &lt;expr4&gt; &lt;expr5&gt;;
+
+&lt;expr4&gt; ::= &lt;expr5&gt;;
+
+&lt;expr5&gt; ::= &lt;expr5&gt; add &lt;expr6&gt;                 =&gt; add &lt;expr5&gt; &lt;expr6&gt;;
+
+&lt;expr5&gt; ::= &lt;expr5&gt; sub &lt;expr6&gt;                 =&gt; sub &lt;expr5&gt; &lt;expr6&gt;;
+
+&lt;expr5&gt; ::= &lt;expr6&gt;;
+
+&lt;expr6&gt; ::= &lt;expr6&gt; mul &lt;expr7&gt;                 =&gt; mul &lt;expr6&gt; &lt;expr7&gt;;
+
+&lt;expr6&gt; ::= &lt;expr6&gt; div &lt;expr7&gt;                 =&gt; div &lt;expr6&gt; &lt;expr7&gt;;
+
+&lt;expr6&gt; ::= &lt;expr6&gt; mod &lt;expr7&gt;                 =&gt; mod &lt;expr6&gt; &lt;expr7&gt;;
+
+&lt;expr6&gt; ::= &lt;expr7&gt;;
+
+&lt;expr7&gt; ::= not &lt;expr8&gt;;
+
+&lt;expr7&gt; ::= s_minus &lt;expr8&gt;;
+
+&lt;expr7&gt; ::= inc &lt;expr8&gt;;
+
+&lt;expr7&gt; ::= dec &lt;expr8&gt;;
+
+&lt;expr7&gt; ::= typeof &lt;expr8&gt;;
+
+&lt;expr7&gt; ::= new &lt;expr8&gt; lparen &lt;params&gt; rparen =&gt; new &lt;expr8&gt; &lt;params&gt;;
+
+&lt;expr7&gt; ::= &lt;expr8&gt;;
+
+&lt;expr8&gt; ::= &lt;expr8&gt; dot ident                   =&gt; dot &lt;expr8&gt; ident;
+
+&lt;expr8&gt; ::= lparen &lt;expr&gt; rparen                =&gt; &lt;expr&gt;;
+
+&lt;expr8&gt; ::= &lt;expr8&gt; lsqr &lt;expr&gt; rsqr            =&gt; array &lt;expr8&gt; &lt;expr&gt;;
+
+&lt;expr8&gt; ::= &lt;expr8&gt; lparen &lt;params&gt; rparen      =&gt; funcall &lt;expr8&gt; &lt;params&gt;;
+
+&lt;params&gt; ::= &lt;expr&gt; comma &lt;params&gt;;
+
+&lt;params&gt; ::= &lt;expr&gt; ;
+
+&lt;params&gt; ::= NULL;
+
+&lt;expr8&gt; ::= lcurly &lt;params&gt; rcurly;
+
+&lt;expr8&gt; ::= float;
+
+&lt;expr8&gt; ::= ident;
+
+&lt;expr8&gt; ::= integer;
+
+&lt;expr8&gt; ::= string;
+
+&lt;expr8&gt; ::= function lparen &lt;param_list&gt; rparen lcurly &lt;statements&gt; rcurly
+
+    =&gt; lambda &lt;param_list&gt; &lt;statements&gt;;
+
+&lt;for_block&gt; ::= for lparen &lt;nullable_expr&gt; semicolon &lt;nullable_expr&gt; semicolon &lt;nullable_expr&gt; rparen lcurly &lt;statements&gt; rcurly
+
+    =&gt; &lt;nullable_expr&gt; &lt;nullable_expr&gt; &lt;nullable_expr&gt; &lt;statements&gt;;
+
+&lt;nullable_expr&gt; ::= &lt;expr&gt;;
+
+&lt;nullable_expr&gt; ::= NULL;
+
+&lt;while_block&gt; ::= while lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly
+
+    =&gt; &lt;expr&gt; &lt;statements&gt;;
+
+&lt;try_block&gt; ::= try lcurly &lt;hooked_statements&gt; rcurly catch lparen ident rparen
+
+    lcurly &lt;hooked_statements&gt; rcurly finally lcurly &lt;statements&gt; rcurly
+
+    =&gt; &lt;hooked_statements&gt; ident &lt;hooked_statements&gt; &lt;statements&gt;;
+
+%equiv &lt;statements&gt; &lt;hooked_statements&gt;;
+
+&lt;hooked_statements&gt; ::= &lt;hooked_statement&gt; &lt;hooked_statements&gt;;
+
+&lt;hooked_statements&gt; ::= NULL;
+
+%equiv &lt;statement&gt; &lt;hooked_statement&gt; &lt;hooked_fc_statement&gt;;
+
+&lt;hooked_statement&gt; ::= &lt;flow_statement&gt;;
+
+&lt;hooked_statement&gt; ::= &lt;expr_statement&gt;;
+
+&lt;hooked_statement&gt; ::= &lt;hooked_fc_statement&gt;;
+
+&lt;hooked_statement&gt; ::= &lt;throw_exception&gt;;
+
+&lt;hooked_fc_statement&gt; ::= &lt;hooked_return_val&gt;;
+
+&lt;hooked_fc_statement&gt; ::= &lt;hooked_return_void&gt;;
+
+&lt;hooked_fc_statement&gt; ::= &lt;hooked_break&gt;;
+
+&lt;hooked_fc_statement&gt; ::= &lt;hooked_continue&gt;;
+
+&lt;hooked_return_val&gt; ::= return &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
+
+&lt;hooked_return_void&gt; ::= return semicolon;
+
+&lt;hooked_break&gt; ::= break semicolon;
+
+&lt;hooked_continue&gt; ::= continue semicolon;
+
+&lt;switch_block&gt; ::= switch lparen &lt;expr&gt; rparen lcurly &lt;switch_cases&gt; &lt;default_case&gt; rcurly
+
+    =&gt; &lt;expr&gt; &lt;switch_cases&gt; &lt;default_case&gt;;
+
+&lt;switch_block&gt; ::= switch lparen &lt;expr&gt; rparen lcurly &lt;switch_cases&gt; rcurly
+
+    =&gt; &lt;expr&gt; &lt;switch_cases&gt;;
+
+%array &lt;switch_cases&gt;;
+
+&lt;switch_cases&gt; ::= &lt;switch_case&gt; &lt;switch_cases&gt;;
+
+&lt;switch_cases&gt; ::= NULL;
+
+&lt;switch_case&gt; ::= case &lt;expr&gt; colon &lt;statements&gt;
+
+    =&gt; &lt;expr&gt; &lt;statements&gt;;
+
+&lt;default_case&gt; ::= default colon &lt;statements&gt;
+
+    =&gt; &lt;statements&gt;;
+</code></pre>
+]]></description>
+                </item>
+                                <item>
+                    <title>实现自己的脚本语言ngscript之二：语法分析</title>
+                    <link>http://wssccc.github.io/blog/ngscript-part-3</link>
+                    <guid>http://wssccc.github.io/blog/ngscript-part-3</guid>
+                    <pubDate>2014-03-06 19:07</pubDate>
+                    <description><![CDATA[<p>ngscript的语法分析使用的是我自己的语法分析工具<a href="https://github.com/wssccc/parseroid.git">parseroid</a>。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。</p>
+
+<p>生成parser的action table运算量还是有点大，所以在新版的parseroid里面table改成了serializable的，可以缓存下来免去生成table的过程。</p>
+
+<h2>实现parseroid</h2>
+
+<h3>文法描述</h3>
+
+<p>parseroid使用LALR(1)文法。</p>
+
+<p>parseroid使用的文法描述文件是这个样子</p>
+
+<pre><code>//starter symbol 
+
+%start &lt;program&gt;;
+
+%array &lt;statements&gt; &lt;param_list&gt; &lt;params&gt;;
+
+%equiv &lt;expr&gt; &lt;expr1&gt; &lt;expr2&gt; &lt;expr3&gt; &lt;expr4&gt; &lt;expr5&gt; &lt;expr6&gt; &lt;expr7&gt; &lt;expr8&gt; &lt;nullable_expr&gt;;
+
+%filter semicolon comma;
+
+
+
+&lt;program&gt; ::= &lt;statements&gt;;
+
+//----------------------------------------------------------------------------
+
+//statements is a collection of statement;
+
+&lt;statements&gt; ::= NULL;
+
+&lt;statements&gt; ::= &lt;statement&gt; &lt;statements&gt;;
+
+//省略一些
+
+&lt;throw_exception&gt; ::= throw &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
+
+//再省略一些
+</code></pre>
+
+<p>%开头的是注记，有这几种</p>
+
+<ul>
+<li><p>%start 指定一个起始符</p></li>
+<li><p>%equiv 标记等价类，在生成语法树之后的reduce过程中，会把等价类合并</p></li>
+<li><p>%filter 也是在reduce过程中，会把这些节点去掉</p></li>
+<li><p>=> 标记的用处是在规约生成语法树的时候调整AST，如这句 <code>&lt;throw_exception&gt; ::= throw &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;</code> <br/>这句的意思是用throw <expr> semicolon的结构规约到<throw_exception>，但是只保存<expr>这个元素，主要是为了后面处理语法树方便和看起来更加顺眼……</p></li>
+</ul>
+
+<h3>实现</h3>
+
+<p>LALR（1）的具体细节书本上都有，就不再阐述了。</p>
+
+<h3>错误恢复</h3>
+
+<p>parseroid使用error符号错误恢复。</p>
+
+<p>具体做法是写这样的产生式<code>&lt;statements&gt; ::= error semicolon &lt;statements&gt;;</code></p>
+
+<p>效果是，在遇到statements中的错误之后，会把错误部分parsing为一个error节点，然后同步到semicolon的位置继续parsing。</p>
+
+<p>具体过程</p>
+
+<p>-不断的弹出栈顶，直到一个特定的状态，在该状态中error符号的动作为移进。</p>
+
+<p>-移进error符号</p>
+
+<p>-不断丢弃输入符号，直到一个特定的向前查看符号，它在当前状态，对应一个非出错的动作。</p>
+
+<p>-重新开始正常分析</p>
+
+<h3>语法树简化</h3>
+
+<p>*合并等价类</p>
+
+<p>*删除无用的嵌套</p>
+
+<p>*删除不必要的节点</p>
+
+<p>合并等价类是因为在parseroid的文法描述中，没有显式指定算符的优先级，需要使用产生式的层次来表现。</p>
+
+<p>于是就有很多<code>&lt;expr1&gt;</code> <code>&lt;expr2&gt;</code>这种东西，但是他们实质上都可以当成expr来处理。</p>
+
+<p>无用的嵌套是因为在<code>&lt;expr1&gt;</code>这种化为<code>&lt;expr&gt;</code>之后，可能出现如<code>&lt;expr&gt; -&gt; &lt;expr&gt; -&gt; number</code>这种，也是可以简化的。</p>
+
+<p>不必要的节点，就是左括号右括号这种。</p>
+
+<p>parseroid源代码在这里</p>
+
+<p><a href="https://github.com/wssccc/parseroid.git">https://github.com/wssccc/parseroid.git</a></p>
+
+<p>后面我会用lexeroid和parseroid实现ngscript的解析器。</p>
+
+<h2>其它分析方法的介绍</h2>
+
+<p>语法分析的方法有很多，简单介绍一下。</p>
+
+<h3>SLR(1)</h3>
+
+<p>编译原理的大作业就是实现SLR（1），可以处理这样的文法</p>
+
+<pre><code>S-&gt;# Ee #
+
+Ee-&gt;Ee + Ti|Ee - Ti|Ti
+
+Ti-&gt;Ti * Ff|Ti / Ff|Ff
+
+Ff-&gt;( Ee )|d
+
+Ff-&gt;sin Ff
+
+Ff-&gt;cos Ff
+</code></pre>
+
+<p>当时觉得只要文法改改就能用，后来真正用的时候才发现是个坑……</p>
+
+<p>书上是把它当过渡方法来讲的</p>
+
+<h3>Parser组合子</h3>
+
+<p>最开始知道这个是在</p>
+
+<p>这里 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/26/2090645.html">自己动手开发编译器（八）用Linq编写解析器组合子</a></p>
+
+<p>这里 <a href="http://www.ibm.com/developerworks/cn/java/j-lo-compose/">利用 Java 实现组合式解析器</a></p>
+
+<p>还有这里 <a href="http://www.cnblogs.com/Ninputer/archive/2011/07/03/2096944.html">自己动手开发编译器（九）CPS风格的解析器组合子</a></p>
+
+<p>我也用Java实现了一个，因为Java没有lambda，硬是用匿名类整了出来。也是CPS的，带错误恢复。</p>
+
+<p>运行起来大概是这样</p>
+
+<p><img src="java-cps-parser.jpg" alt="java-cps-parser.jpg" /></p>
+
+<p>不过解析器组合子的缺点也很明显，就是太难调试了。而且文法是用代码的形式在程序中描述的，太复杂之后我就被绕晕了 = =</p>
+
+<h3>LL（1）</h3>
+
+<p>LL（1）应该算是比较容易实现的，不过需要对文法做一些调整，消除左递归，提取左公因式什么的，后来写到二元运算符的文法我还是觉得LL（1）不能忍。</p>
+
+<h3>LALR（1）</h3>
+
+<p>书上介绍分析方法的顺序LALR（1）一般是排在最后的，按这种设定应该是这个最靠谱了。</p>
+
+<p>附一张图：</p>
+
+<p><img src="grammar-cascade.jpg" alt="grammar-cascade.jpg" /></p>
+]]></description>
+                </item>
+                                <item>
+                    <title>实现自己的脚本语言ngscript之一：词法分析</title>
+                    <link>http://wssccc.github.io/blog/ngscript-part-2</link>
+                    <guid>http://wssccc.github.io/blog/ngscript-part-2</guid>
+                    <pubDate>2014-03-04 13:35</pubDate>
+                    <description><![CDATA[<p>正则表达式的理论基础可以参考<a href="http://home.cnblogs.com/u/Ninputer/">装配脑袋</a>的</p>
+
+<ul>
+<li><p>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html">自己动手开发编译器（二）正则语言和正则表达式</a></p></li>
+<li><p>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html">自己动手开发编译器（三）有穷自动机</a></p></li>
+<li><p>还有这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html">自己动手开发编译器（四）利用DFA转换表建立扫描器</a></p></li>
+</ul>
+
+<p>如果学过编译原理的课程就更好了。</p>
+
+<p>词法分析用到了我写的一个工具lexeroid。</p>
+
+<p>下面说一些我写lexeroid时候遇到的问题。</p>
+
+<h2>Unicode</h2>
+
+<p>在装配脑袋的<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html">自己动手开发编译器（四）利用DFA转换表建立扫描器</a> 中，提到了等价类处理Unicode的方法。</p>
+
+<p>我做了一些改进。</p>
+
+<p>在lexeroid中，所有的已定义字符都会注册，等Regex定义完成，开始生成DFA之前，会把所有的Any转换为undefined和每个已注册类。</p>
+
+<p>如果定义的逻辑是not，则会在替换的时候排除掉这些字符。</p>
+
+<p>这样就没有lexeroid之前的冲突处理过程了。 </p>
+
+<h2>最长匹配</h2>
+
+<p>这个很多书上应该介绍过，就是设置一个lastFinal一样的东西，然后在DFA停机的时候把最后一个正确匹配的取出来。</p>
+
+<h2>NFA的组织</h2>
+
+<p>最开始我做的是把每个token的NFA分开，存成一个数组，然后每个生成DFA之后，在词法分析的时候一个一个去测试。后来发现这个似乎和用Java内置的正则表达式没什么区别。而且有一个问题是，token定义的顺序要十分小心，因为先定义的token会被优先匹配到。</p>
+
+<p>后来我试了另外一种方法，就是等所有token生成NFA完之后，添加一个入口，用epsilon边把所有的NFA连起来形成一个大NFA，然后再用它生成的DFA去匹配。</p>
+
+<h2>最后</h2>
+
+<p>lexeroid定义token时大概是这个样子(目前lexeroid已经支持从字符串parse出Regex)</p>
+
+<pre class="brush: java">
+
+    LexerBuilder builder = new LexerBuilder();
+
+    builder.defineToken("if", Re.string("if"));
+
+    builder.defineToken("return", Re.string("return"));
+
+    builder.defineToken("else", Re.string("else"));
+
+    builder.defineToken("ident", Re.concat(
+
+            Re.or(Re.letter(), Re.chr('_')),
+
+            Re.many(Re.or(Re.or(Re.letter(), Re.chr('_')), Re.digit()))
+
+    ));
+
+    builder.defineToken("string",
+
+            Re.concat(Re.chr('"'), Re.many(Re.char1()), Re.chr('"'))
+
+    );
+
+
+
+      //此处省略N行
+
+      return builder.build();
+
+</pre>
+
+<p>代码可以从这里找到</p>
+
+<p><a href="https://github.com/wssccc/lexeroid.git">https://github.com/wssccc/lexeroid.git</a></p>
+
+<p>作为一个词法分析器，后面的文章中还会用到它。</p>
+
+<p>相关资料</p>
+
+<ul>
+<li><p><a href="http://www.cnblogs.com/geniusvczh/p/3577561.html">跟vczh看实例学编译原理——二：实现Tinymoe的词法分析</a></p></li>
+<li><p><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html">自己动手开发编译器（二）正则语言和正则表达式</a></p></li>
+<li><p><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html">自己动手开发编译器（三）有穷自动机</a></p></li>
+<li><p><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html">自己动手开发编译器（四）利用DFA转换表建立扫描器</a></p></li>
+</ul>
+]]></description>
+                </item>
+                                <item>
+                    <title>实现自己的脚本语言ngscript之零</title>
+                    <link>http://wssccc.github.io/blog/ngscript-part-1</link>
+                    <guid>http://wssccc.github.io/blog/ngscript-part-1</guid>
+                    <pubDate>2014-03-04 12:04</pubDate>
+                    <description><![CDATA[<p>正式开始介绍前先扯点没用的。</p>
+
+<p>从小玩basic长大的小朋友大多有一个梦想，就是自己实现一个basic解释器。</p>
+
+<p>不过这里我实现的不是basic，而是一个语法和功能类似javascript的东西。</p>
+
+<p>暂且称之为ngscript</p>
+
+<p><strong>做这个的初衷是想试试不借助任何cc工具，只用java和一些语言的基础设施来实现一个脚本解释器。</strong></p>
+
+<p>不使用cc工具有以下原因</p>
+
+<ul>
+<li><p>语法蛋疼</p></li>
+<li><p>调试麻烦</p></li>
+<li><p>不知其所以然</p></li>
+</ul>
+
+<p>很多书上把常用的parsing方法介绍一通，然后就去折腾sablecc,yacc去了（貌似还有一本书是专门讲yacc和lex的）</p>
+
+<p>后来看了<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">这个系列</a>，受到了一些启发。不过里面使用的是C#，有好用的lambda。</p>
+
+<p>我也曾试着用java的匿名类机制实现了一个parser combinator 一样的东西，那真是痛苦的经历…</p>
+
+<p>现在ngscript使用的是LALR(1)的分析方法，分析工具是我自己实现的一个能读入bnf动态生成分析器的东西。</p>
+
+<p>从下一篇开始我会把各个部分介绍一遍。</p>
+]]></description>
+                </item>
+                                <item>
                     <title>饼干君这一年</title>
                     <link>http://wssccc.github.io/blog/biscuit-of-the-year</link>
                     <guid>http://wssccc.github.io/blog/biscuit-of-the-year</guid>
-                    <pubDate>2014-2-22</pubDate>
+                    <pubDate>2014-02-22 00:00</pubDate>
                     <description><![CDATA[<p>用info命令可以看到到现在为止，饼干君已经存在1年零1月零3天了。</p>
 
 <p>饼干君的诞生是由于以下几个事情：</p>
@@ -55,7 +618,7 @@
                     <title>饼干君更新了diff</title>
                     <link>http://wssccc.github.io/blog/biscuit-diff</link>
                     <guid>http://wssccc.github.io/blog/biscuit-diff</guid>
-                    <pubDate>2014-2-21</pubDate>
+                    <pubDate>2014-02-21 00:00</pubDate>
                     <description><![CDATA[<p>去年这个时候开始做饼干君这个微信公共账号，当时的功能只有模糊搜索的聊天功能。</p>
 
 <p>后来慢慢加入了查询天气，查询维基等。</p>
@@ -101,7 +664,7 @@
                     <title>﻿最近在整parser</title>
                     <link>http://wssccc.github.io/blog/about-parsers</link>
                     <guid>http://wssccc.github.io/blog/about-parsers</guid>
-                    <pubDate>2013-12-25</pubDate>
+                    <pubDate>2013-12-25 00:00</pubDate>
                     <description><![CDATA[<p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。</p>
 
 <p>不过前两个部分是妥妥儿的了，所以暂且称之为parser。</p>
@@ -140,23 +703,9 @@
 
 <p>目前这个生成工具已经有大部分常用的功能了，tag支持，atom订阅，静态页面等等</p>
 
-<p><img src="#FIX_PATH#test.jpg"></p>
+<p><img src="zmfl.jpg"></p>
 
 <p>图片来源：http://secret.pp.163.com/</p>
-]]></description>
-                </item>
-                                <item>
-                    <title>搭好了github的博客</title>
-                    <link>http://wssccc.github.io/blog/hello</link>
-                    <guid>http://wssccc.github.io/blog/hello</guid>
-                    <pubDate>2013-11-22</pubDate>
-                    <description><![CDATA[<p>被帝老师影响，也来github凑凑热闹…</p>
-
-<p>不过没有使用octopress，因为ruby的gem在这里好像一直不好使。</p>
-
-<p>于是自己写了一个生成博客的工具，持续更新中</p>
-
-<p><a href="http://wssccc.github.io/game/index.html">一个小游戏</a></p>
 ]]></description>
                 </item>
                         </channel>

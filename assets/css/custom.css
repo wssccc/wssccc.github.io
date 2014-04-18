@@ -27,7 +27,6 @@ a{
 }
 .archive-heading
 {
-    text-rendering: optimizelegibility;
     font-family: "Times New Roman", Times, serif;
     font-size: 25px;
     font-weight: bold;
@@ -46,15 +45,17 @@ hr{
 }
 
 .archive{
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 .post{
     margin-bottom: 10px;
 }
 .time{
-    font-family: tahoma,Times, serif;
+    font-family: "Times New Roman",Times, serif;
+    font-style: italic;
     color:  #cccccc;
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-right: 2em;
 }
 
 .container
