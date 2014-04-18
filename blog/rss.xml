@@ -3,10 +3,10 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-04-18 17:45:32</lastBuildDate>
-            <pubDate>2014-04-18 17:45:32</pubDate>
+            <lastBuildDate>2014-04-18 17:53:18</lastBuildDate>
+            <pubDate>2014-04-18 17:53:18</pubDate>
                             <item>
-                    <title>实现自己的脚本语言ngscript之三：语法设计</title>
+                    <title>ngscript之三：语法设计</title>
                     <link>http://wssccc.github.io/blog/ngscript-part-4</link>
                     <guid>http://wssccc.github.io/blog/ngscript-part-4</guid>
                     <pubDate>2014-04-06 13:10</pubDate>
@@ -287,7 +287,7 @@
 ]]></description>
                 </item>
                                 <item>
-                    <title>实现自己的脚本语言ngscript之二：语法分析</title>
+                    <title>ngscript之二：语法分析</title>
                     <link>http://wssccc.github.io/blog/ngscript-part-3</link>
                     <guid>http://wssccc.github.io/blog/ngscript-part-3</guid>
                     <pubDate>2014-03-06 19:07</pubDate>
@@ -442,7 +442,7 @@ Ff-&gt;cos Ff
 ]]></description>
                 </item>
                                 <item>
-                    <title>实现自己的脚本语言ngscript之一：词法分析</title>
+                    <title>ngscript之一：词法分析</title>
                     <link>http://wssccc.github.io/blog/ngscript-part-2</link>
                     <guid>http://wssccc.github.io/blog/ngscript-part-2</guid>
                     <pubDate>2014-03-04 13:35</pubDate>
@@ -535,7 +535,7 @@ Ff-&gt;cos Ff
 ]]></description>
                 </item>
                                 <item>
-                    <title>实现自己的脚本语言ngscript之零</title>
+                    <title>ngscript之零</title>
                     <link>http://wssccc.github.io/blog/ngscript-part-1</link>
                     <guid>http://wssccc.github.io/blog/ngscript-part-1</guid>
                     <pubDate>2014-03-04 12:04</pubDate>
