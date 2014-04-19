@@ -1,0 +1,9 @@
+关于generator
+2014-4-17
+
+###关于blog generator
+
+wsc\_blog\_generator是这个博客使用的生成工具，它可以很方便的运行在windows下。
+最近加上了markdown支持，不过仍然在开发中，没有发布的计划。
+
+如果有需要源代码可以联系我

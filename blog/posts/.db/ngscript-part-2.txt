@@ -1,0 +1,59 @@
+ngscript之一：词法分析
+2014-03-04 13:35
+ngscript 词法分析 语言
+
+正则表达式的理论基础可以参考[装配脑袋](http://home.cnblogs.com/u/Ninputer/)的
+* 这个 [自己动手开发编译器（二）正则语言和正则表达式](http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html)
+* 这个 [自己动手开发编译器（三）有穷自动机](http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html)
+* 还有这个 [自己动手开发编译器（四）利用DFA转换表建立扫描器](http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html)
+如果学过编译原理的课程就更好了。
+
+词法分析用到了我写的一个工具lexeroid。
+下面说一些我写lexeroid时候遇到的问题。
+
+##Unicode
+
+在装配脑袋的[自己动手开发编译器（四）利用DFA转换表建立扫描器](http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html) 中，提到了等价类处理Unicode的方法。
+我做了一些改进。
+在lexeroid中，所有的已定义字符都会注册，等Regex定义完成，开始生成DFA之前，会把所有的Any转换为undefined和每个已注册类。
+如果定义的逻辑是not，则会在替换的时候排除掉这些字符。
+这样就没有lexeroid之前的冲突处理过程了。 
+
+##最长匹配
+这个很多书上应该介绍过，就是设置一个lastFinal一样的东西，然后在DFA停机的时候把最后一个正确匹配的取出来。
+
+##NFA的组织
+最开始我做的是把每个token的NFA分开，存成一个数组，然后每个生成DFA之后，在词法分析的时候一个一个去测试。后来发现这个似乎和用Java内置的正则表达式没什么区别。而且有一个问题是，token定义的顺序要十分小心，因为先定义的token会被优先匹配到。
+后来我试了另外一种方法，就是等所有token生成NFA完之后，添加一个入口，用epsilon边把所有的NFA连起来形成一个大NFA，然后再用它生成的DFA去匹配。
+
+##最后
+lexeroid定义token时大概是这个样子(目前lexeroid已经支持从字符串parse出Regex)
+<pre class="brush: java">
+    LexerBuilder builder = new LexerBuilder();
+    builder.defineToken("if", Re.string("if"));
+    builder.defineToken("return", Re.string("return"));
+    builder.defineToken("else", Re.string("else"));
+    builder.defineToken("ident", Re.concat(
+            Re.or(Re.letter(), Re.chr('_')),
+            Re.many(Re.or(Re.or(Re.letter(), Re.chr('_')), Re.digit()))
+    ));
+    builder.defineToken("string",
+            Re.concat(Re.chr('"'), Re.many(Re.char1()), Re.chr('"'))
+    );
+
+      //此处省略N行
+      return builder.build();
+</pre>
+代码可以从这里找到
+
+[https://github.com/wssccc/lexeroid.git](https://github.com/wssccc/lexeroid.git)
+
+作为一个词法分析器，后面的文章中还会用到它。
+
+
+相关资料
+
+* [跟vczh看实例学编译原理——二：实现Tinymoe的词法分析](http://www.cnblogs.com/geniusvczh/p/3577561.html)
+* [自己动手开发编译器（二）正则语言和正则表达式](http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html)
+* [自己动手开发编译器（三）有穷自动机](http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html)
+* [自己动手开发编译器（四）利用DFA转换表建立扫描器](http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html)
