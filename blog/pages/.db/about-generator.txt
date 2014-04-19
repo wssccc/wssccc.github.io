@@ -4,6 +4,18 @@
 ###关于blog generator
 
 wsc\_blog\_generator是这个博客使用的生成工具，它可以很方便的运行在windows下。
-最近加上了markdown支持，不过仍然在开发中，没有发布的计划。
+它有以下特点
 
-如果有需要源代码可以联系我
+* 根据文件修改增量更新
+* 有syntax highlighter
+* 支持markdown
+* 图片地址修正
+* 支持windows
+* tag系统
+* 静态页支持
+* 多说评论系统
+* RSS生成
+* data完全独立于生成的站点
+
+这个仍然在开发中，目前是第二次较大的更新（markdown，syntax highlighter）。
+以后也会按照我个人喜好加入一些其它的功能，所以没有发布。
