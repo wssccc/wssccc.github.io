@@ -142,11 +142,3 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 15px;
     padding-bottom: 20px;
 }
-
-
-.center-img
-{
-    top: 50%;
-    position: absolute;
-    left: 50%;
-}
