@@ -1,0 +1,9 @@
+搭好了github的博客
+2013-11-22
+随笔 杂
+
+被帝老师影响，也来github凑凑热闹…
+不过没有使用octopress，因为ruby的gem在这里好像一直不好使。
+于是自己写了一个生成博客的工具，持续更新中
+
+<a href="http://wssccc.github.io/game/index.html">一个小游戏</a>

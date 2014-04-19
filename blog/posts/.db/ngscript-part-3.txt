@@ -1,0 +1,96 @@
+ngscript之二：语法分析
+2014-03-06 19:07
+ngscript 语法分析 语言 编译器
+
+ngscript的语法分析使用的是我自己的语法分析工具[parseroid](https://github.com/wssccc/parseroid.git)。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。
+生成parser的action table运算量还是有点大，所以在新版的parseroid里面table改成了serializable的，可以缓存下来免去生成table的过程。
+
+##实现parseroid
+###文法描述
+parseroid使用LALR(1)文法。
+parseroid使用的文法描述文件是这个样子
+
+    //starter symbol 
+    %start <program>;
+    %array <statements> <param_list> <params>;
+    %equiv <expr> <expr1> <expr2> <expr3> <expr4> <expr5> <expr6> <expr7> <expr8> <nullable_expr>;
+    %filter semicolon comma;
+
+    <program> ::= <statements>;
+    //----------------------------------------------------------------------------
+    //statements is a collection of statement;
+    <statements> ::= NULL;
+    <statements> ::= <statement> <statements>;
+    //省略一些
+    <throw_exception> ::= throw <expr> semicolon => <expr>;
+    //再省略一些
+
+%开头的是注记，有这几种
+* %start 指定一个起始符
+* %equiv 标记等价类，在生成语法树之后的reduce过程中，会把等价类合并
+* %filter 也是在reduce过程中，会把这些节点去掉
+* => 标记的用处是在规约生成语法树的时候调整AST，如这句 `<throw_exception> ::= throw <expr> semicolon => <expr>;` <br/>这句的意思是用throw <expr> semicolon的结构规约到<throw_exception>，但是只保存<expr>这个元素，主要是为了后面处理语法树方便和看起来更加顺眼……
+
+###实现
+LALR（1）的具体细节书本上都有，就不再阐述了。
+
+###错误恢复
+parseroid使用error符号错误恢复。
+具体做法是写这样的产生式`<statements> ::= error semicolon <statements>;`
+效果是，在遇到statements中的错误之后，会把错误部分parsing为一个error节点，然后同步到semicolon的位置继续parsing。
+
+具体过程
+-不断的弹出栈顶，直到一个特定的状态，在该状态中error符号的动作为移进。
+-移进error符号
+-不断丢弃输入符号，直到一个特定的向前查看符号，它在当前状态，对应一个非出错的动作。
+-重新开始正常分析
+
+###语法树简化
+*合并等价类
+*删除无用的嵌套
+*删除不必要的节点
+
+合并等价类是因为在parseroid的文法描述中，没有显式指定算符的优先级，需要使用产生式的层次来表现。
+于是就有很多`<expr1>` `<expr2>`这种东西，但是他们实质上都可以当成expr来处理。
+无用的嵌套是因为在`<expr1>`这种化为`<expr>`之后，可能出现如`<expr> -> <expr> -> number`这种，也是可以简化的。
+不必要的节点，就是左括号右括号这种。
+
+parseroid源代码在这里
+[https://github.com/wssccc/parseroid.git](https://github.com/wssccc/parseroid.git)
+
+后面我会用lexeroid和parseroid实现ngscript的解析器。
+
+##其它分析方法的介绍
+语法分析的方法有很多，简单介绍一下。
+
+###SLR(1)
+编译原理的大作业就是实现SLR（1），可以处理这样的文法
+
+    S-># Ee #
+    Ee->Ee + Ti|Ee - Ti|Ti
+    Ti->Ti * Ff|Ti / Ff|Ff
+    Ff->( Ee )|d
+    Ff->sin Ff
+    Ff->cos Ff
+
+当时觉得只要文法改改就能用，后来真正用的时候才发现是个坑……
+书上是把它当过渡方法来讲的
+
+###Parser组合子
+最开始知道这个是在
+这里 [自己动手开发编译器（八）用Linq编写解析器组合子](http://www.cnblogs.com/Ninputer/archive/2011/06/26/2090645.html)
+这里 [利用 Java 实现组合式解析器](http://www.ibm.com/developerworks/cn/java/j-lo-compose/)
+还有这里 [自己动手开发编译器（九）CPS风格的解析器组合子](http://www.cnblogs.com/Ninputer/archive/2011/07/03/2096944.html)
+
+我也用Java实现了一个，因为Java没有lambda，硬是用匿名类整了出来。也是CPS的，带错误恢复。
+运行起来大概是这样
+![java-cps-parser.jpg](java-cps-parser.jpg)
+不过解析器组合子的缺点也很明显，就是太难调试了。而且文法是用代码的形式在程序中描述的，太复杂之后我就被绕晕了 = =
+
+###LL（1）
+LL（1）应该算是比较容易实现的，不过需要对文法做一些调整，消除左递归，提取左公因式什么的，后来写到二元运算符的文法我还是觉得LL（1）不能忍。
+
+###LALR（1）
+书上介绍分析方法的顺序LALR（1）一般是排在最后的，按这种设定应该是这个最靠谱了。
+附一张图：
+![grammar-cascade.jpg](grammar-cascade.jpg)
