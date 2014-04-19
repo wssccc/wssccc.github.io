@@ -12,6 +12,7 @@ $(document).ready(function()
             $('#cover-img').attr('src', cover.img);
             $('#desc').html(cover.desc);
             //$('body').css('background-color', 'rgb(251,251,251)');
+            $('.center-img').removeClass('center-img');
         }
     });
 });
