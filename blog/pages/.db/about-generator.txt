@@ -16,6 +16,7 @@ wsc\_blog\_generator是这个博客使用的生成工具，它可以很方便的
 * 多说评论系统
 * RSS生成
 * data完全独立于生成的站点
+* jiathis 分享功能
 
 这个仍然在开发中，目前是第二次较大的更新（markdown，syntax highlighter）。
 以后也会按照我个人喜好加入一些其它的功能，所以没有发布。
