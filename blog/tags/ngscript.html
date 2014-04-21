@@ -19,7 +19,7 @@
             <script src="../../assets/sh/scripts/shBrushJScript.js"></script>
             <script src="../../assets/sh/scripts/shBrushJava.js"></script>
             <script src="../../assets/sh/scripts/shBrushXml.js"></script>
-            
+
             <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
             <!--[if lt IE 9]>
@@ -88,7 +88,15 @@
                         var src = $(this).attr('src');
                         if (src.match("http://") === null)
                         {
-                            $(this).attr('src', '../../blog/images/' + src);
+                            var real_url = '../../blog/images/' + src;
+                            $(this).attr('src', real_url);
+                            $(this).addClass('user-image');
+                            var archor = $('<a>');
+                            archor.attr('href', real_url);
+                            archor.attr('target', '_blank');
+
+                            archor.insertBefore($(this));
+                            $(this).appendTo(archor);
                         }
                     });
 
@@ -96,7 +104,7 @@
             </script>
             <script>
                 SyntaxHighlighter.all();
-        </script>
+            </script>
         </body>
     </html>
     
