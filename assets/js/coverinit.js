@@ -11,6 +11,8 @@ $(document).ready(function()
             var cover = data[sel];
             $('#cover-img').attr('src', cover.img);
             $('#cover-img').attr('alt', cover.desc);
+            $('#cover-img').attr('title', cover.desc);
+            
             $('#desc').html(cover.desc);
             //$('body').css('background-color', 'rgb(251,251,251)');
         }
