@@ -46,7 +46,7 @@
     <div id="posts" class="container">
         <div class="post">
             <div>
-                <a href="index.html" class="post-heading">ngscript之二：语法分析</a>
+                <a href="index.html" class="post-heading">﻿ngscript之二：语法分析</a>
                 <span class="time pull-right">2014-03-06 19:07</span>
                 <hr/>
             </div>
@@ -115,21 +115,20 @@
 
 <p>具体过程</p>
 
-<p>-不断的弹出栈顶，直到一个特定的状态，在该状态中error符号的动作为移进。</p>
-
-<p>-移进error符号</p>
-
-<p>-不断丢弃输入符号，直到一个特定的向前查看符号，它在当前状态，对应一个非出错的动作。</p>
-
-<p>-重新开始正常分析</p>
+<ul>
+<li><p>不断的弹出栈顶，直到一个特定的状态，在该状态中error符号的动作为移进。</p></li>
+<li><p>移进error符号</p></li>
+<li><p>不断丢弃输入符号，直到一个特定的向前查看符号，它在当前状态，对应一个非出错的动作。</p></li>
+<li><p>重新开始正常分析</p></li>
+</ul>
 
 <h3>语法树简化</h3>
 
-<p>*合并等价类</p>
-
-<p>*删除无用的嵌套</p>
-
-<p>*删除不必要的节点</p>
+<ul>
+<li><p>合并等价类</p></li>
+<li><p>删除无用的嵌套</p></li>
+<li><p>删除不必要的节点</p></li>
+</ul>
 
 <p>合并等价类是因为在parseroid的文法描述中，没有显式指定算符的优先级，需要使用产生式的层次来表现。</p>
 
@@ -264,7 +263,7 @@ Ff-&gt;cos Ff
     </div>
     <div style="margin-left: 0px;">
         <!-- Duoshuo Comment BEGIN -->
-        <div class="ds-thread" data-thread-key="ngscript-part-3/" data-title="ngscript之二：语法分析"></div>
+        <div class="ds-thread" data-thread-key="ngscript-part-3/" data-title="﻿ngscript之二：语法分析"></div>
         <script type="text/javascript">
             var duoshuoQuery = {short_name: "wssccc"};
             (function() {
