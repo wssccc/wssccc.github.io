@@ -2,6 +2,11 @@
 2014-4-17
 no_tag
 
+##ngscript 
+ngscript是我的一个程序语言项目，用来探索各种有趣的语言特性。目前仍在开发中。
+* [ngscript home page](http://ngscript.org/)
+* [interactive ngscript](http://shell.ngscript.org/)
+
 ##我的github
 [https://github.com/wssccc](https://github.com/wssccc)
 

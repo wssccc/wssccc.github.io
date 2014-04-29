@@ -10,6 +10,7 @@ $(document).ready(function()
             var sel = Math.floor(Math.random() * data.length);
             var cover = data[sel];
             $('#cover-img').attr('src', cover.img);
+            $('#cover-img').attr('alt', cover.desc);
             $('#desc').html(cover.desc);
             //$('body').css('background-color', 'rgb(251,251,251)');
         }

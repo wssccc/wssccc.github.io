@@ -18,5 +18,13 @@
     {
         "img": "assets/covers/kumono.jpg",
         "desc": "云的彼端，是约定的地方"
+    },
+    {
+        "img": "assets/covers/sammy.jpg",
+        "desc": "夏娃的时间，Sammy"
+    },
+    {
+        "img": "assets/covers/kumono2.jpg",
+        "desc": "云的彼端，是约定的地方"
     }
 ]
