@@ -1,0 +1,10 @@
+try ngscript online
+2014-04-29 22:55
+ngscript 语言
+
+ngscript本地编译的版本已经弄好很久了，于是就考虑放一个到SAE上用。
+为了适应web的交互模式，parser部分改动很大。
+一些链接
+* [一个简单的指南](http://ngscript.org/)
+* [ngscript shell](http://shell.ngscript.org/)
+

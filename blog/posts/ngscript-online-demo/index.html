@@ -39,43 +39,105 @@
                     <div>
         <ol class="breadcrumb">
             <li><a href="../../../">wssccc</a></li>
-            <li><a href="../../">archive</a></li>
+            <li><a href="../../archives/1/">archive</a></li>
+            <li><a href="#">post</a></li>
         </ol>
     </div>
     <div id="posts" class="container">
-                    <div class="archive">
-                <div>
-                    <a href="../../posts/about-parsers/" class="archive-heading">﻿最近在整parser</a>
-                    <span class="time pull-right">2013-12-25 00:00</span>
-                    <hr/>
-                </div>
-                <div class="archive-content">
-                                    </div>
+        <div class="post">
+            <div>
+                <a href="index.html" class="post-heading">try ngscript online</a>
+                <span class="time pull-right">2014-04-29 22:55</span>
+                <hr/>
             </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/why-github/" class="archive-heading">﻿为什么使用github.io</a>
-                    <span class="time pull-right">2013-11-22 17:36</span>
-                    <hr/>
-                </div>
-                <div class="archive-content">
-                                    </div>
+            <div class="post-content">
+                <p>ngscript本地编译的版本已经弄好很久了，于是就考虑放一个到SAE上用。</p>
+
+<p>为了适应web的交互模式，parser部分改动很大。</p>
+
+<p>一些链接</p>
+
+<ul>
+<li><p><a href="http://ngscript.org/">一个简单的指南</a></p></li>
+<li><p><a href="http://shell.ngscript.org/">ngscript shell</a></p></li>
+</ul>
             </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/hello/" class="archive-heading">搭好了github的博客</a>
-                    <span class="time pull-right">2013-11-22 00:00</span>
-                    <hr/>
-                </div>
-                <div class="archive-content">
-                                    </div>
+            <hr/>
+            <div class="">
+                <p>Tags: 
+                                            <a class="tag_a" href="../../tags/ngscript.html">ngscript</a>
+                                                <a class="tag_a" href="../../tags/E8AFADE8A880.html">语言</a>
+                                        </p>
             </div>
-                </div>
+            <!-- JiaThis Button BEGIN -->
+            <div class="jiathis_style">
+                <a class="jiathis_button_tsina"></a>
+                <a class="jiathis_button_tqq"></a>
+                <a class="jiathis_button_weixin"></a>
+                <a class="jiathis_button_renren"></a>
+                <a class="jiathis_button_douban"></a>
+                <a class="jiathis_button_fb"></a>
+                <a class="jiathis_button_googleplus"></a>
+                <a class="jiathis_button_twitter"></a>
+                <a class="jiathis_button_qzone"></a>
+                <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank">更多</a>
+            </div>
+            <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1394078030301326" charset="utf-8"></script>
+            <!-- JiaThis Button END -->
+        </div>
+    </div>
     <div class="">
         <ul class="pager">
-            <li class="previous "><a href="../1/">&larr; Previous</a></li>
-            <li class="next disabled"><a href="javascript:void(0)">Next &rarr;</a></li>
+            <li class="pull-left"><a id="pre-post-archor" href="#">上一篇： <span id="pre-post-title"></span></a></li>
+            <li class="pull-right"><a id="next-post-archor" href="#">下一篇： <span id="next-post-title"></span></a></li>
         </ul>
+        <script>
+            $(document).ready(function()
+            {
+                $.getJSON('../indexer.json', null, function(data)
+                {
+                    if (data instanceof Array)
+                    {
+                        for (i = 0; i < data.length; i++) {
+                            if (data[i].sname === 'ngscript-online-demo')
+                            {
+                                if (i !== 0)
+                                {
+                                    $('#pre-post-archor').attr('href', data[i - 1].url);
+                                    $('#pre-post-title').text(data[i - 1].title);
+                                } else {
+                                    $('#pre-post-title').text('没有了');
+                                }
+                                if (i !== data.length - 1)
+                                {
+                                    $('#next-post-archor').attr('href', data[i + 1].url);
+                                    $('#next-post-title').text(data[i + 1].title);
+                                } else {
+                                    $('#next-post-title').text('没有了');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    </div>
+    <div style="margin-left: 0px;">
+        <!-- Duoshuo Comment BEGIN -->
+        <div class="ds-thread" data-thread-key="ngscript-online-demo/" data-title="try ngscript online"></div>
+        <script type="text/javascript">
+            var duoshuoQuery = {short_name: "wssccc"};
+            (function() {
+                var ds = document.createElement('script');
+                ds.type = 'text/javascript';
+                ds.async = true;
+                ds.src = 'http://static.duoshuo.com/embed.js';
+                ds.charset = 'UTF-8';
+                (document.getElementsByTagName('head')[0]
+                        || document.getElementsByTagName('body')[0]).appendChild(ds);
+            })();
+        </script>
+        <!-- Duoshuo Comment END -->
     </div>
                     <hr/>
                 <div class="footer">

@@ -45,290 +45,35 @@
     <div id="posts" class="container">
                     <div class="archive">
                 <div>
+                    <a href="../../posts/ngscript-online-demo/" class="archive-heading">try ngscript online</a>
+                    <span class="time pull-right">2014-04-29 22:55</span>
+                    <hr/>
+                </div>
+                <div class="archive-content">
+                    <p>ngscript本地编译的版本已经弄好很久了，于是就考虑放一个到SAE上用。</p>
+
+<p>为了适应web的交互模式，parser部分改动很大。</p>
+
+<p>一些链接</p>
+
+<ul>
+<li><p><a href="http://ngscript.org/">一个简单的指南</a></p></li>
+<li><p><a href="http://shell.ngscript.org/">ngscript shell</a></p></li>
+</ul>
+                </div>
+            </div>
+                        <div class="archive">
+                <div>
                     <a href="../../posts/ngscript-part-4/" class="archive-heading">ngscript之三：语法设计</a>
                     <span class="time pull-right">2014-04-06 13:10</span>
                     <hr/>
                 </div>
                 <div class="archive-content">
-                    <p>这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。</p>
-
-<p>于是我去读了<a href="http://book.douban.com/subject/25735333/">这本书</a>，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。</p>
-
-<p>于是ngscript就愉快的决定使用类似js语法、编译成字节码了。</p>
-
-<p>这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。</p>
-
-<p>parseroid加上这个描述，就可以分析出ngscript程序的语法树。大概是这个样子</p>
-
-<p><img src="ngscript-ast.png" alt="ngscript-ast.png" /></p>
-
-<p>现在的BNF已经写成下面这个样子了。可能还会不断的改。常用的控制结构和try…catch都有。</p>
-
-<p>生成树之后就是编译成字节码了，这个会在下一篇中详述。</p>
-
-<pre><code>//starter symbol 
-
-%start &lt;program&gt;;
-
-%array &lt;statements&gt; &lt;param_list&gt; &lt;params&gt;;
-
-%equiv &lt;expr&gt; &lt;expr1&gt; &lt;expr2&gt; &lt;expr3&gt; &lt;expr4&gt; &lt;expr5&gt; &lt;expr6&gt; &lt;expr7&gt; &lt;expr8&gt; &lt;nullable_expr&gt;;
-
-%filter semicolon comma;
-
-
-
-&lt;program&gt; ::= &lt;statements&gt;;
-
-//----------------------------------------------------------------------------
-
-//statements is a collection of statement;
-
-&lt;statements&gt; ::= NULL;
-
-&lt;statements&gt; ::= &lt;statement&gt; &lt;statements&gt;;
-
-//----------------------------------------------------------------------------
-
-//statement forms
-
-%equiv &lt;statement&gt; &lt;flow_statement&gt; &lt;expr_statement&gt; &lt;fc_statement&gt;;
-
-&lt;statement&gt; ::= &lt;flow_statement&gt;;
-
-&lt;statement&gt; ::= &lt;expr_statement&gt;;
-
-&lt;statement&gt; ::= &lt;fc_statement&gt;;
-
-&lt;statement&gt; ::= &lt;throw_exception&gt;;
-
-&lt;flow_statement&gt; ::= &lt;function_decl&gt;;
-
-&lt;flow_statement&gt; ::= &lt;if_block&gt;;
-
-&lt;flow_statement&gt; ::= &lt;for_block&gt;;
-
-&lt;flow_statement&gt; ::= &lt;if_else_block&gt;;
-
-&lt;flow_statement&gt; ::= &lt;while_block&gt;;
-
-&lt;flow_statement&gt; ::= &lt;try_block&gt;;
-
-&lt;flow_statement&gt; ::= &lt;switch_block&gt;;
-
-&lt;expr_statement&gt; ::= &lt;expr&gt; semicolon;
-
-&lt;throw_exception&gt; ::= throw &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
-
-&lt;fc_statement&gt; ::= &lt;return_val&gt;;
-
-&lt;fc_statement&gt; ::= &lt;return_void&gt;;
-
-&lt;fc_statement&gt; ::= break semicolon;
-
-&lt;fc_statement&gt; ::= continue semicolon;
-
-&lt;return_val&gt; ::= return &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
-
-&lt;return_void&gt; ::= return semicolon;
-
-//error handling
-
-//&lt;statement&gt; ::= ERROR semicolon;
-
-//----------------------------------------------------------------------------
-
-//details of function declaration
-
-&lt;function_decl&gt; ::= function ident lparen &lt;param_list&gt; rparen lcurly &lt;statements&gt; rcurly
-
-    =&gt;    ident &lt;param_list&gt; &lt;statements&gt;;
-
-&lt;param_list&gt; ::= ident comma &lt;param_list&gt;;
-
-&lt;param_list&gt; ::= ident;
-
-&lt;param_list&gt; ::= NULL;
-
-//----------------------------------------------------------------------------
-
-//details of if block and else
-
-&lt;if_block&gt; ::= if lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly
-
-    =&gt; &lt;expr&gt; &lt;statements&gt; ;
-
-&lt;if_else_block&gt; ::= if lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly else lcurly &lt;statements&gt; rcurly 
-
-    =&gt; &lt;expr&gt; &lt;statements&gt; &lt;statements&gt;;
-
-//----------------------------------------------------------------------------
-
-//details of expr
-
-&lt;expr&gt; ::= &lt;expr&gt; assign &lt;expr1&gt;                =&gt; assign &lt;expr&gt; &lt;expr1&gt;;
-
-&lt;expr&gt; ::= &lt;expr&gt; sub_assign &lt;expr1&gt;            =&gt; sub_assign &lt;expr&gt; &lt;expr1&gt;;
-
-&lt;expr&gt; ::= &lt;expr1&gt;;
-
-&lt;expr1&gt; ::= &lt;expr1&gt; or &lt;expr2&gt;                  =&gt; or &lt;expr1&gt; &lt;expr2&gt;;
-
-&lt;expr1&gt; ::= &lt;expr2&gt;;
-
-&lt;expr2&gt; ::= &lt;expr2&gt; and &lt;expr3&gt;                 =&gt; and &lt;expr2&gt; &lt;expr3&gt;;
-
-&lt;expr2&gt; ::= &lt;expr3&gt;;
-
-&lt;expr3&gt; ::= &lt;expr3&gt; eq &lt;expr4&gt;             =&gt; eq &lt;expr3&gt; &lt;expr4&gt;;
-
-&lt;expr3&gt; ::= &lt;expr3&gt; neq &lt;expr4&gt;          =&gt; neq &lt;expr3&gt; &lt;expr4&gt;;
-
-&lt;expr3&gt; ::= &lt;expr4&gt;;
-
-&lt;expr4&gt; ::= &lt;expr4&gt; gt &lt;expr5&gt;                  =&gt; gt &lt;expr4&gt; &lt;expr5&gt;;
-
-&lt;expr4&gt; ::= &lt;expr4&gt; lt &lt;expr5&gt;                  =&gt; lt &lt;expr4&gt; &lt;expr5&gt;;
-
-&lt;expr4&gt; ::= &lt;expr4&gt; ge &lt;expr5&gt;                  =&gt; ge &lt;expr4&gt; &lt;expr5&gt;;
-
-&lt;expr4&gt; ::= &lt;expr4&gt; le &lt;expr5&gt;                  =&gt; le &lt;expr4&gt; &lt;expr5&gt;;
-
-&lt;expr4&gt; ::= &lt;expr5&gt;;
-
-&lt;expr5&gt; ::= &lt;expr5&gt; add &lt;expr6&gt;                 =&gt; add &lt;expr5&gt; &lt;expr6&gt;;
-
-&lt;expr5&gt; ::= &lt;expr5&gt; sub &lt;expr6&gt;                 =&gt; sub &lt;expr5&gt; &lt;expr6&gt;;
-
-&lt;expr5&gt; ::= &lt;expr6&gt;;
-
-&lt;expr6&gt; ::= &lt;expr6&gt; mul &lt;expr7&gt;                 =&gt; mul &lt;expr6&gt; &lt;expr7&gt;;
-
-&lt;expr6&gt; ::= &lt;expr6&gt; div &lt;expr7&gt;                 =&gt; div &lt;expr6&gt; &lt;expr7&gt;;
-
-&lt;expr6&gt; ::= &lt;expr6&gt; mod &lt;expr7&gt;                 =&gt; mod &lt;expr6&gt; &lt;expr7&gt;;
-
-&lt;expr6&gt; ::= &lt;expr7&gt;;
-
-&lt;expr7&gt; ::= not &lt;expr8&gt;;
-
-&lt;expr7&gt; ::= s_minus &lt;expr8&gt;;
-
-&lt;expr7&gt; ::= inc &lt;expr8&gt;;
-
-&lt;expr7&gt; ::= dec &lt;expr8&gt;;
-
-&lt;expr7&gt; ::= typeof &lt;expr8&gt;;
-
-&lt;expr7&gt; ::= new &lt;expr8&gt; lparen &lt;params&gt; rparen =&gt; new &lt;expr8&gt; &lt;params&gt;;
-
-&lt;expr7&gt; ::= &lt;expr8&gt;;
-
-&lt;expr8&gt; ::= &lt;expr8&gt; dot ident                   =&gt; dot &lt;expr8&gt; ident;
-
-&lt;expr8&gt; ::= lparen &lt;expr&gt; rparen                =&gt; &lt;expr&gt;;
-
-&lt;expr8&gt; ::= &lt;expr8&gt; lsqr &lt;expr&gt; rsqr            =&gt; array &lt;expr8&gt; &lt;expr&gt;;
-
-&lt;expr8&gt; ::= &lt;expr8&gt; lparen &lt;params&gt; rparen      =&gt; funcall &lt;expr8&gt; &lt;params&gt;;
-
-&lt;params&gt; ::= &lt;expr&gt; comma &lt;params&gt;;
-
-&lt;params&gt; ::= &lt;expr&gt; ;
-
-&lt;params&gt; ::= NULL;
-
-&lt;expr8&gt; ::= lcurly &lt;params&gt; rcurly;
-
-&lt;expr8&gt; ::= float;
-
-&lt;expr8&gt; ::= ident;
-
-&lt;expr8&gt; ::= integer;
-
-&lt;expr8&gt; ::= string;
-
-&lt;expr8&gt; ::= function lparen &lt;param_list&gt; rparen lcurly &lt;statements&gt; rcurly
-
-    =&gt; lambda &lt;param_list&gt; &lt;statements&gt;;
-
-&lt;for_block&gt; ::= for lparen &lt;nullable_expr&gt; semicolon &lt;nullable_expr&gt; semicolon &lt;nullable_expr&gt; rparen lcurly &lt;statements&gt; rcurly
-
-    =&gt; &lt;nullable_expr&gt; &lt;nullable_expr&gt; &lt;nullable_expr&gt; &lt;statements&gt;;
-
-&lt;nullable_expr&gt; ::= &lt;expr&gt;;
-
-&lt;nullable_expr&gt; ::= NULL;
-
-&lt;while_block&gt; ::= while lparen &lt;expr&gt; rparen lcurly &lt;statements&gt; rcurly
-
-    =&gt; &lt;expr&gt; &lt;statements&gt;;
-
-&lt;try_block&gt; ::= try lcurly &lt;hooked_statements&gt; rcurly catch lparen ident rparen
-
-    lcurly &lt;hooked_statements&gt; rcurly finally lcurly &lt;statements&gt; rcurly
-
-    =&gt; &lt;hooked_statements&gt; ident &lt;hooked_statements&gt; &lt;statements&gt;;
-
-%equiv &lt;statements&gt; &lt;hooked_statements&gt;;
-
-&lt;hooked_statements&gt; ::= &lt;hooked_statement&gt; &lt;hooked_statements&gt;;
-
-&lt;hooked_statements&gt; ::= NULL;
-
-%equiv &lt;statement&gt; &lt;hooked_statement&gt; &lt;hooked_fc_statement&gt;;
-
-&lt;hooked_statement&gt; ::= &lt;flow_statement&gt;;
-
-&lt;hooked_statement&gt; ::= &lt;expr_statement&gt;;
-
-&lt;hooked_statement&gt; ::= &lt;hooked_fc_statement&gt;;
-
-&lt;hooked_statement&gt; ::= &lt;throw_exception&gt;;
-
-&lt;hooked_fc_statement&gt; ::= &lt;hooked_return_val&gt;;
-
-&lt;hooked_fc_statement&gt; ::= &lt;hooked_return_void&gt;;
-
-&lt;hooked_fc_statement&gt; ::= &lt;hooked_break&gt;;
-
-&lt;hooked_fc_statement&gt; ::= &lt;hooked_continue&gt;;
-
-&lt;hooked_return_val&gt; ::= return &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;
-
-&lt;hooked_return_void&gt; ::= return semicolon;
-
-&lt;hooked_break&gt; ::= break semicolon;
-
-&lt;hooked_continue&gt; ::= continue semicolon;
-
-&lt;switch_block&gt; ::= switch lparen &lt;expr&gt; rparen lcurly &lt;switch_cases&gt; &lt;default_case&gt; rcurly
-
-    =&gt; &lt;expr&gt; &lt;switch_cases&gt; &lt;default_case&gt;;
-
-&lt;switch_block&gt; ::= switch lparen &lt;expr&gt; rparen lcurly &lt;switch_cases&gt; rcurly
-
-    =&gt; &lt;expr&gt; &lt;switch_cases&gt;;
-
-%array &lt;switch_cases&gt;;
-
-&lt;switch_cases&gt; ::= &lt;switch_case&gt; &lt;switch_cases&gt;;
-
-&lt;switch_cases&gt; ::= NULL;
-
-&lt;switch_case&gt; ::= case &lt;expr&gt; colon &lt;statements&gt;
-
-    =&gt; &lt;expr&gt; &lt;statements&gt;;
-
-&lt;default_case&gt; ::= default colon &lt;statements&gt;
-
-    =&gt; &lt;statements&gt;;
-</code></pre>
-                </div>
+                                    </div>
             </div>
                         <div class="archive">
                 <div>
-                    <a href="../../posts/ngscript-part-3/" class="archive-heading">ngscript之二：语法分析</a>
+                    <a href="../../posts/ngscript-part-3/" class="archive-heading">﻿ngscript之二：语法分析</a>
                     <span class="time pull-right">2014-03-06 19:07</span>
                     <hr/>
                 </div>
@@ -366,15 +111,6 @@
                 <div>
                     <a href="../../posts/biscuit-diff/" class="archive-heading">饼干君更新了diff</a>
                     <span class="time pull-right">2014-02-21 00:00</span>
-                    <hr/>
-                </div>
-                <div class="archive-content">
-                                    </div>
-            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/about-parsers/" class="archive-heading">﻿最近在整parser</a>
-                    <span class="time pull-right">2013-12-25 00:00</span>
                     <hr/>
                 </div>
                 <div class="archive-content">
