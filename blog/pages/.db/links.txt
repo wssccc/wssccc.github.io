@@ -3,7 +3,6 @@ links
 no_tag
 
 ##Links
-* [Alex Zhao](http://www.chinaalex.com)
 * [Big Bug Ban](http://3haku.net/)
 * [ChinaAlex](http://chinaalex.com/)
 * [LiTech](http://lejia.li/)
