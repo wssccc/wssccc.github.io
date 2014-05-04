@@ -30,7 +30,7 @@ AST流的输出到编译部分，是以statement为单位的，因为statement�
 所以又加了个同步锁。
 
 写到这里我总感觉打开的方式似乎有问题……
-我想到了协程。http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B
+我想到了协程。[http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B](http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B)
 以前的lexer中的读字符是在一个大while中，当流返回eof的时候while退出。其它时间则在流的read函数处阻塞着。
 正是这个read，让我不得不加入另外一个线程来跑它。
 
@@ -53,4 +53,4 @@ ngscript中的协程实现是一个类。以一个函数为参数初始化，然
 而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。
 
 ngscript关于coroutine的部分
-https://github.com/wssccc/ngscript/blob/master/README.md#coroutine
+[https://github.com/wssccc/ngscript/blob/master/README.md#coroutine](https://github.com/wssccc/ngscript/blob/master/README.md#coroutine)
