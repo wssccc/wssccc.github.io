@@ -3,9 +3,101 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-04-30 17:07:05</lastBuildDate>
-            <pubDate>2014-04-30 17:07:05</pubDate>
+            <lastBuildDate>2014-05-04 13:10:34</lastBuildDate>
+            <pubDate>2014-05-04 13:10:34</pubDate>
                             <item>
+                    <title>ngscript加入了coroutine支持</title>
+                    <link>http://wssccc.github.io/blog/ngscript-coroutine</link>
+                    <guid>http://wssccc.github.io/blog/ngscript-coroutine</guid>
+                    <pubDate>2014-05-04 00:00</pubDate>
+                    <description><![CDATA[<h2>为什么使用协程</h2>
+
+<p>在写ngscript的shell时遇到一点问题，于是想到了很久之前看过的lua的协程，觉得似乎有那么点意思。</p>
+
+<p>问题是这样的，最开始ngscript版本中，是一次性读入全部文件的内容到一个字符串中，然后依次进行词法分析，</p>
+
+<p>语法分析，得到AST之后拿AST去编译出虚拟机汇编。</p>
+
+<p>后来因为要做shell，也就是一边输入一边进行编译的过程。因为输入有可能是不完全的，完整的程序可能分很多次发送过来，</p>
+
+<p>这样，就需要有一个机制来判定什么时候该编译了。比如这样的输入</p>
+
+<pre class="brush: java">
+
+    function fn () { //回车1
+
+        println("fn call"); //回车2
+
+    } //回车3
+
+</pre>
+
+<p>正确的处理方式应该是，在回车1和回车2处提示用户继续输入，在回车3处进行编译过程。</p>
+
+<p>最直观的方法是不停的尝试编译，如果出错则等待下一次输入。当然这个显然不行 = =</p>
+
+<p>于是尝试把整个过程改成流，大概就是</p>
+
+<p>></p>
+
+<blockquote>
+  <p>字符流-> 词素流 -> AST流</p>
+</blockquote>
+
+<p>></p>
+
+<p>AST流的输出到编译部分，是以statement为单位的，因为statement貌似是最小可编译的结构。</p>
+
+<p>运行起来之后，大概是这个样子。调用compile，compile向parser要AST，parser向lexer要token，lexer则向字符流要字符。</p>
+
+<p>当某个环节产生可以返回的东西后，则传回到上一层执行。</p>
+
+<p>因为会在字符流阻塞，于是整个compile过程需要一个单独的线程来跑。</p>
+
+<p>这样问题又来了。在交互中输出信息（执行产生的一些东西和AST、ASM）是同步返回的，但是因为流需要阻塞又不得不使用线程，</p>
+
+<p>所以又加了个同步锁。</p>
+
+<p>写到这里我总感觉打开的方式似乎有问题……</p>
+
+<p>我想到了协程。http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B</p>
+
+<p>以前的lexer中的读字符是在一个大while中，当流返回eof的时候while退出。其它时间则在流的read函数处阻塞着。</p>
+
+<p>正是这个read，让我不得不加入另外一个线程来跑它。</p>
+
+<p>如果Java有协程的话，实际上可以这样来设计。</p>
+
+<p>把lexer的读入过程创建为一个协程，在while中判断如果流不可用，则yield回去。</p>
+
+<p>其他部分大抵也是如此。这样一来，整个过程（lex、parse、compile）又是同步的了。</p>
+
+<p>当下一次有输入时，首先把输入的东西写进流，然后依次resume。yield回来的东西就是输出。</p>
+
+<p>但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，</p>
+
+<p>使feed看起来是可重入的。</p>
+
+<h2>ngscript中的协程</h2>
+
+<p>ngscript中的协程实现是一个类。以一个函数为参数初始化，然后push进参数，就可以调用了。</p>
+
+<p>命名也是参考了lua的resume,yield,status三个函数。</p>
+
+<p>实现方式是，在resume中，把调用resume的frame，替换成调用函数的frame（主要是为了函数前面初始化形参变量的过程），</p>
+
+<p>然后切换环境，进入函数执行。这里有个小trick是，栈顶返回地址写的不是resume的返回地址，而是一段特别为了hook return的代码的地址。</p>
+
+<p>在这段代码中，会把当前coroutine的状态置为returned，然后再正常的返回。</p>
+
+<p>而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。</p>
+
+<p>ngscript关于coroutine的部分</p>
+
+<p>https://github.com/wssccc/ngscript/blob/master/README.md#coroutine</p>
+]]></description>
+                </item>
+                                <item>
                     <title>try ngscript online</title>
                     <link>http://wssccc.github.io/blog/ngscript-online-demo</link>
                     <guid>http://wssccc.github.io/blog/ngscript-online-demo</guid>
@@ -674,38 +766,6 @@ Ff-&gt;cos Ff
 <p>扫描二维码添加</p>
 
 <p><img src="biscuit_qr.jpg" alt="biscuit_qr" /></p>
-]]></description>
-                </item>
-                                <item>
-                    <title>﻿最近在整parser</title>
-                    <link>http://wssccc.github.io/blog/about-parsers</link>
-                    <guid>http://wssccc.github.io/blog/about-parsers</guid>
-                    <pubDate>2013-12-25 00:00</pubDate>
-                    <description><![CDATA[<p>其实是在整一个编译器一样的东西，不过编译器前前后后乱七八糟的太多，我也不确定写完之后它会是什么样子（也可能是个解释器）。</p>
-
-<p>不过前两个部分是妥妥儿的了，所以暂且称之为parser。</p>
-
-<p>和一般的parser不同，这个parser既不是针对特定语言手写的，也不是parser工具生成的。</p>
-
-<p>它可以读入词法描述和语法描述，然后再开始parse。</p>
-
-<p>语法分析使用了LALR(1)。本来是准备用parser组合子的，但是java不支持lambda，调试起来也麻烦，</p>
-
-<p>当然最重要的原因是不支持左递归……</p>
-
-<p>现在语法分析器已经可以支持error符号的错误恢复，和空产生式了。</p>
-
-<p>试用了一些s-exp的语法，工作的还挺好的样子</p>
-
-<p>一直就想做这个东西，后来学编译原理的时候，老师只让我们做了SLR(1)的实验，觉得局限很大，</p>
-
-<p>后来看到这个系列文章<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/06/2073908.html">一个链接</a></p>
-
-<p>跟着做了做，发现里面有很多问题，比如构造正则表达式的DFA处理unicode时，比如使用的解析器组合子方法本身的问题等等。</p>
-
-<p>去年这个时候开始关注王垠，最近抽空读了很多他的博客，虽然给人一种“无法交流感”，但是他有很多十分独到的见解。</p>
-
-<p><a href="http://www.yinwang.org/">www.yinwang.org</a></p>
 ]]></description>
                 </item>
                         </channel>
