@@ -3,8 +3,8 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-05-04 13:17:50</lastBuildDate>
-            <pubDate>2014-05-04 13:17:50</pubDate>
+            <lastBuildDate>2014-05-04 13:21:33</lastBuildDate>
+            <pubDate>2014-05-04 13:21:33</pubDate>
                             <item>
                     <title>ngscript加入了coroutine支持</title>
                     <link>http://wssccc.github.io/blog/ngscript-coroutine</link>
@@ -70,9 +70,7 @@
 
 <p>当下一次有输入时，首先把输入的东西写进流，然后依次resume。yield回来的东西就是输出。</p>
 
-<p>但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，</p>
-
-<p>使feed看起来是可重入的。</p>
+<p>但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，使feed看起来是可重入的。</p>
 
 <h2>ngscript中的协程</h2>
 
