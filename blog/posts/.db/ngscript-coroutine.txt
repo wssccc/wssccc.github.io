@@ -1,0 +1,58 @@
+ngscript加入了coroutine支持
+2014-05-04
+ngscript 语言 coroutine
+
+##为什么使用协程
+在写ngscript的shell时遇到一点问题，于是想到了很久之前看过的lua的协程，觉得似乎有那么点意思。
+问题是这样的，最开始ngscript版本中，是一次性读入全部文件的内容到一个字符串中，然后依次进行词法分析，
+语法分析，得到AST之后拿AST去编译出虚拟机汇编。
+
+后来因为要做shell，也就是一边输入一边进行编译的过程。因为输入有可能是不完全的，完整的程序可能分很多次发送过来，
+这样，就需要有一个机制来判定什么时候该编译了。比如这样的输入
+<pre class="brush: java">
+    function fn () { //回车1
+        println("fn call"); //回车2
+    } //回车3
+</pre>
+正确的处理方式应该是，在回车1和回车2处提示用户继续输入，在回车3处进行编译过程。
+
+最直观的方法是不停的尝试编译，如果出错则等待下一次输入。当然这个显然不行 = =
+
+于是尝试把整个过程改成流，大概就是
+>
+>字符流-> 词素流 -> AST流
+>
+
+AST流的输出到编译部分，是以statement为单位的，因为statement貌似是最小可编译的结构。
+运行起来之后，大概是这个样子。调用compile，compile向parser要AST，parser向lexer要token，lexer则向字符流要字符。
+当某个环节产生可以返回的东西后，则传回到上一层执行。
+
+因为会在字符流阻塞，于是整个compile过程需要一个单独的线程来跑。
+这样问题又来了。在交互中输出信息（执行产生的一些东西和AST、ASM）是同步返回的，但是因为流需要阻塞又不得不使用线程，
+所以又加了个同步锁。
+
+写到这里我总感觉打开的方式似乎有问题……
+我想到了协程。http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B
+以前的lexer中的读字符是在一个大while中，当流返回eof的时候while退出。其它时间则在流的read函数处阻塞着。
+正是这个read，让我不得不加入另外一个线程来跑它。
+
+如果Java有协程的话，实际上可以这样来设计。
+把lexer的读入过程创建为一个协程，在while中判断如果流不可用，则yield回去。
+其他部分大抵也是如此。这样一来，整个过程（lex、parse、compile）又是同步的了。
+当下一次有输入时，首先把输入的东西写进流，然后依次resume。yield回来的东西就是输出。
+
+但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，
+使feed看起来是可重入的。
+
+##ngscript中的协程
+ngscript中的协程实现是一个类。以一个函数为参数初始化，然后push进参数，就可以调用了。
+命名也是参考了lua的resume,yield,status三个函数。
+
+实现方式是，在resume中，把调用resume的frame，替换成调用函数的frame（主要是为了函数前面初始化形参变量的过程），
+然后切换环境，进入函数执行。这里有个小trick是，栈顶返回地址写的不是resume的返回地址，而是一段特别为了hook return的代码的地址。
+在这段代码中，会把当前coroutine的状态置为returned，然后再正常的返回。
+
+而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。
+
+ngscript关于coroutine的部分
+https://github.com/wssccc/ngscript/blob/master/README.md#coroutine
