@@ -40,6 +40,7 @@ AST流的输出到编译部分，是以statement为单位的，因为statement�
 但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，使feed看起来是可重入的。
 
 ##ngscript中的协程
+<del>
 ngscript中的协程实现是一个类。用一个函数对象和参数列表初始化，就可以调用了。
 命名也是参考了lua的resume,yield,status三个函数。
 
@@ -51,3 +52,10 @@ ngscript中的协程实现是一个类。用一个函数对象和参数列表初
 
 ngscript关于coroutine的部分
 [https://github.com/wssccc/ngscript/blob/master/README.md#coroutine](https://github.com/wssccc/ngscript/blob/master/README.md#coroutine)
+</del>
+
+###5.7更新：
+昨天发现这个实现里面有一个bug，就是在协程函数体内部，把yield方法的引用传给更内层的函数，然后在更内层(= =)的函数yield出来时，就会出现类型错误。
+因为yield出来时没有恢复堆栈，一层的时候（只在resume进去的那个函数内调用yield）不会有错，如果在往内堆栈就不对了。
+现在ngscript使用的activation record保存方式是直接放在栈上，这样实现continuation也会有问题。
+有空了再改成放在heap上的，顺便把这个bug也解决了。

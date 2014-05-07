@@ -110,21 +110,41 @@
 
 <h2>ngscript中的协程</h2>
 
-<p>ngscript中的协程实现是一个类。用一个函数对象和参数列表初始化，就可以调用了。</p>
+<del>
 
-<p>命名也是参考了lua的resume,yield,status三个函数。</p>
+ngscript中的协程实现是一个类。用一个函数对象和参数列表初始化，就可以调用了。
 
-<p>实现方式是，在resume中，把调用resume的frame，替换成调用函数的frame（主要是为了函数前面初始化形参变量的过程），</p>
+命名也是参考了lua的resume,yield,status三个函数。
 
-<p>然后切换环境，进入函数执行。这里有个小trick是，栈顶返回地址写的不是resume的返回地址，而是一段特别为了hook return的代码的地址。</p>
 
-<p>在这段代码中，会把当前coroutine的状态置为returned，然后再正常的返回。</p>
 
-<p>而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。</p>
+实现方式是，在resume中，把调用resume的frame，替换成调用函数的frame（主要是为了函数前面初始化形参变量的过程），
 
-<p>ngscript关于coroutine的部分</p>
+然后切换环境，进入函数执行。这里有个小trick是，栈顶返回地址写的不是resume的返回地址，而是一段特别为了hook return的代码的地址。
 
-<p><a href="https://github.com/wssccc/ngscript/blob/master/README.md#coroutine">https://github.com/wssccc/ngscript/blob/master/README.md#coroutine</a></p>
+在这段代码中，会把当前coroutine的状态置为returned，然后再正常的返回。
+
+
+
+而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。
+
+
+
+ngscript关于coroutine的部分
+
+[https://github.com/wssccc/ngscript/blob/master/README.md#coroutine](https://github.com/wssccc/ngscript/blob/master/README.md#coroutine)
+
+</del>
+
+<h3>5.7更新：</h3>
+
+<p>昨天发现这个实现里面有一个bug，就是在协程函数体内部，把yield方法的引用传给更内层的函数，然后在更内层(= =)的函数yield出来时，就会出现类型错误。</p>
+
+<p>因为yield出来时没有恢复堆栈，一层的时候（只在resume进去的那个函数内调用yield）不会有错，如果在往内堆栈就不对了。</p>
+
+<p>现在ngscript使用的activation record保存方式是直接放在栈上，这样实现continuation也会有问题。</p>
+
+<p>有空了再改成放在heap上的，顺便把这个bug也解决了。</p>
             </div>
             <div class="">
                 <p>Tags: 
