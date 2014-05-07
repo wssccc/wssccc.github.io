@@ -3,8 +3,8 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-05-04 16:28:56</lastBuildDate>
-            <pubDate>2014-05-04 16:28:56</pubDate>
+            <lastBuildDate>2014-05-07 13:33:34</lastBuildDate>
+            <pubDate>2014-05-07 13:33:34</pubDate>
                             <item>
                     <title>ngscript加入了coroutine支持</title>
                     <link>http://wssccc.github.io/blog/ngscript-coroutine</link>
@@ -18,7 +18,7 @@
 
 <p>后来因为要做shell，也就是一边输入一边进行编译的过程。因为输入有可能是不完全的，完整的程序可能分很多次发送过来，这样，就需要有一个机制来判定什么时候该编译了。比如这样的输入</p>
 
-<pre class="brush: java">
+<pre class="brush: js">
 
     function fn () { //回车1
 

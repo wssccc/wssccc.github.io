@@ -10,3 +10,4 @@ no_tag
 * [WHITEFIRER](http://whitefirer.org/)
 * [下一站 – Ihcblog !](http://www.ihcblog.com/)
 * [MOD](http://modmod.org/)
+* [Path to Void](http://pathtovoid.net/)
