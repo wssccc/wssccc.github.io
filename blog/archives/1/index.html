@@ -143,8 +143,6 @@ ngscript关于coroutine的部分
 <p>因为yield出来时没有恢复堆栈，一层的时候（只在resume进去的那个函数内调用yield）不会有错，如果在往内堆栈就不对了。</p>
 
 <p>现在ngscript使用的activation record保存方式是直接放在栈上，这样实现continuation也会有问题。</p>
-
-<p>有空了再改成放在heap上的，顺便把这个bug也解决了。</p>
                 </div>
                 <hr/>            </div>
                         <div class="archive">
