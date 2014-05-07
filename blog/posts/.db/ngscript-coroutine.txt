@@ -7,7 +7,7 @@ ngscript 语言 coroutine
 问题是这样的，最开始ngscript版本中，是一次性读入全部文件的内容到一个字符串中，然后依次进行词法分析，语法分析，得到AST之后拿AST去编译出虚拟机汇编。
 
 后来因为要做shell，也就是一边输入一边进行编译的过程。因为输入有可能是不完全的，完整的程序可能分很多次发送过来，这样，就需要有一个机制来判定什么时候该编译了。比如这样的输入
-<pre class="brush: java">
+<pre class="brush: js">
     function fn () { //回车1
         println("fn call"); //回车2
     } //回车3
