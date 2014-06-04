@@ -47,109 +47,270 @@
     <div id="posts" class="container">
         <div class="post">
             <div>
-                <a href="index.html" class="post-heading">ngscript加入了coroutine支持</a>
-                <span class="time pull-right">2014-05-04 00:00</span>
+                <a href="index.html" class="post-heading">饼干君的原理</a>
+                <span class="time pull-right">2014-06-05 00:00</span>
             </div>
             <div class="post-content">
-                <h2>为什么使用协程</h2>
+                <p><em>之前貌似有一篇饼干君做符号微分的<a href="../../posts/biscuit-diff/">文章</a></em></p>
 
-<p>在写ngscript的shell时遇到一点问题，于是想到了很久之前看过的lua的协程，觉得似乎有那么点意思。</p>
+<p><em>应赵伯要求整理出以前写过的一篇讲饼干君聊天的原理的东西，原文在<a href="http://cloudbbs.org/forum.php?mod=viewthread&amp;tid=20040">SAE的bbs上</a>。</em></p>
 
-<p>问题是这样的，最开始ngscript版本中，是一次性读入全部文件的内容到一个字符串中，然后依次进行词法分析，语法分析，得到AST之后拿AST去编译出虚拟机汇编。</p>
+<p><br/></p>
 
-<p>后来因为要做shell，也就是一边输入一边进行编译的过程。因为输入有可能是不完全的，完整的程序可能分很多次发送过来，这样，就需要有一个机制来判定什么时候该编译了。比如这样的输入</p>
+<p>sae给我们提供了分词服务，使用它可以很容易实现一个聊天机器人。 </p>
 
-<pre class="brush: js">
+<p>首先我们需要一个语料数据库，语料数据库的内容格式是一个句子，和它对应的回答。这样的格式可以很容易地收集到大量数据，比如对白，聊天记录什么的。 </p>
 
-    function fn () { //回车1
+<p>聊天机器人需要解决的问题是怎样从大量语料数据中找到最合适的回答。直接从输入语句找到回答是很复杂的，但是我们可以从语料数据库中找到最接近输入的句子，然后将它的对应的回答作为输入句子的回答。 </p>
 
-        println("fn call"); //回车2
+<p>比如数据库中有记录  </p>
 
-    } //回车3
+<table cellspacing="0" class="t_table" style="width:50%">
+
+    <tbody>
+
+        <tr>
+
+            <td> 1</td><td> 你好</td><td>好</td>
+
+        </tr>
+
+        <tr>
+
+            <td> 2</td><td> 你好吗</td><td>我很好 </td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+
+<p>那么对于一个输入 </p>
+
+<blockquote>
+  <p>你最近好吗</p>
+</blockquote>
+
+<p>应该是匹配到</p>
+
+<blockquote>
+  <p>我很好</p>
+</blockquote>
+
+<p>这个回答上，而不是<code>好</code>这个回答 </p>
+
+<p>下面来介绍一下具体的实现过程。 </p>
+
+<p>首先我们需要将输入句子划分为很多段。划分的方法有很多种，最简单的是直接划分成字符数组。但是划分成字符数组有一些问题，因为句子是由词语组成的，直接划分成一个一个的字，就丢失了很多有用的信息，这对于后面的查找和匹配会产生一些影响。所以这里使用sae分词，可以很好的将句子有意义地划分成词语。 </p>
+
+<p>上面的句子可以划分成</p>
+
+<blockquote>
+  <p>[0] => Array ( [word] => 你 [word_tag] => 123 [index] => 0 )</p>
+  
+  <p>[1] => Array ( [word] => 最近 [word_tag] => 132 [index] => 1 ) </p>
+  
+  <p>[2] => Array ( [word] => 好 [word_tag] => 10 [index] => 2 ) </p>
+  
+  <p>[3] => Array ( [word] => 吗 [word_tag] => 160 [index] => 3 )</p>
+</blockquote>
+
+<p>这里的word_tag是词语的属性，我们可以用它过滤掉一些无用的词语和标点符号。得到词语的数组之后，在数据库中找到包含各个词的记录集合。</p>
+
+<table cellspacing="0" class="t_table" style="width:50%">
+
+    <tbody>
+
+        <tr>
+
+            <td> 你</td><td> 1,2</td></tr><tr><td> 最近</td><td> 空</td>
+
+        </tr>
+
+        <tr>
+
+            <td> 好</td><td> 1,2</td></tr><tr><td> 吗</td><td> 2</td>
+
+        </tr>
+
+    </tbody>
+
+</table>
+
+<p>然后找出记录集中出现最多的记录id，很明显可以看出应该选择2作为回答。这里因为数据量比较小，所以只有一个，实际上记录id也可能会是很多个，因为也可能出现多个回答都很适合的情况，这时候可以随机从中取一个作为结果。 </p>
+
+<p>找到记录id之后，再从数据库中找到对应的记录，它的回答字段就是我们要找的合适的回答了。 </p>
+
+<p>说了这么多，现在来编码实现。</p>
+
+<pre class="brush: php">
+
+<?php
+
+/*
+
+*  wssccc all rights reserved
+
+*/
+
+if (is_string($_GET['msg'])) {
+
+  $str = $_GET['msg'];
+
+} else {
+
+  echo 'no input';
+
+  exit();
+
+}
+
+$disabledTags = array(SaeSegment::POSTAG_ID_V_SH, SaeSegment::POSTAG_ID_W_SP, SaeSegment::POSTAG_ID_W_S,
+
+  SaeSegment::POSTAG_ID_W_R, SaeSegment::POSTAG_ID_W_L, SaeSegment::POSTAG_ID_W_H,
+
+  SaeSegment::POSTAG_ID_W_D, SaeSegment::POSTAG_ID_W);
+
+$saeSeg = new SaeSegment();
+
+$rawSegResult = $saeSeg->segment($str, 1);
+
+// 失败时输出错误码和错误信息
+
+if ($rawSegResult === false) {
+
+  var_dump($saeSeg->errno(), $saeSeg->errmsg());
+
+}
+
+//处理词语数组
+
+$segResult = array();
+
+foreach ($rawSegResult as $elem) {
+
+  //删除禁用的词语类型
+
+  if (!in_array($elem['word_tag'], $disabledTags)) {
+
+    array_push($segResult, $elem);
+
+  }
+
+}
+
+echo '<br>分词结果：<br>';
+
+var_dump($segResult);  //输出
+
+echo '<br>';
+
+$hitSet = array(); //命中集合
+
+$mysql = new SaeMysql();
+
+//查询包含每个词语的记录集合
+
+foreach ($segResult as $segitem) {
+
+  $sql = "SELECT id FROM corpus where txt like '%" . $segitem['word'] . "%'";
+
+  $data = $mysql->getData($sql);
+
+  if ($data != NULL) {
+
+    foreach ($data as $row) {
+
+    //把结果存到临时变量
+
+    $id = $row['id'];
+
+    if (isset($hitSet[$id])) {
+
+      ++$hitSet[$id];
+
+    } else {
+
+      $hitSet[$id] = 1;
+
+    }
+
+    }
+
+  }
+
+}
+
+if ($mysql->errno() != 0) {
+
+  die('Error:' . $mysql->errmsg());
+
+}
+
+var_dump($hitSet);
+
+if (count($hitSet) > 0) {
+
+  $maxhit = -1;
+
+  $maxhitIds = array(); //最大命中的id集合
+
+  foreach ($hitSet as $hitid => $cnt) {
+
+    if ($cnt > $maxhit) {
+
+    $maxhit = $cnt;
+
+    $maxhitIds = array($hitid);
+
+    }else if ($cnt == $maxhit) {
+
+    array_push($maxhitIds, $hitid);
+
+    }
+
+  }
+
+} else {
+
+  echo 'not found';
+
+  exit();
+
+}
+
+var_dump($maxhitIds);
+
+//随机选择一个
+
+$selected = $maxhitIds[array_rand($maxhitIds)];
+
+//通过id找到对应的
+
+$sql = "SELECT response FROM corpus WHERE id =$selected";
+
+$data = $mysql->getVar($sql);
+
+if ($data != NULL) {
+
+  $str = $data;
+
+}
+
+$mysql->closeDb();
+
+echo '回答: ' . $str;
 
 </pre>
 
-<p>正确的处理方式应该是，在回车1和回车2处提示用户继续输入，在回车3处进行编译过程。</p>
-
-<p>最直观的方法是不停的尝试编译，如果出错则等待下一次输入。当然这个显然不行 = =</p>
-
-<p>于是尝试把整个过程改成流，大概就是</p>
-
-<blockquote>
-  <p>字符流-> 词素流 -> AST流</p>
-</blockquote>
-
-<p>AST流的输出到编译部分，是以statement为单位的，因为statement貌似是最小可编译的结构。</p>
-
-<p>运行起来之后，大概是这个样子。调用compile，compile向parser要AST，parser向lexer要token，lexer则向字符流要字符。</p>
-
-<p>当某个环节产生可以返回的东西后，则传回到上一层执行。</p>
-
-<p>因为会在字符流阻塞，于是整个compile过程需要一个单独的线程来跑。</p>
-
-<p>这样问题又来了。在交互中输出信息（执行产生的一些东西和AST、ASM）是同步返回的，但是因为流需要阻塞又不得不使用线程，</p>
-
-<p>所以又加了个同步锁。</p>
-
-<p>写到这里我总感觉打开的方式似乎有问题……</p>
-
-<p>我想到了协程。<a href="http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B">http://zh.wikipedia.org/zh-cn/%E5%8D%8F%E7%A8%8B</a></p>
-
-<p>以前的lexer中的读字符是在一个大while中，当流返回eof的时候while退出。其它时间则在流的read函数处阻塞着。</p>
-
-<p>正是这个read，让我不得不加入另外一个线程来跑它。</p>
-
-<p>如果Java有协程的话，实际上可以这样来设计。</p>
-
-<p>把lexer的读入过程创建为一个协程，在while中判断如果流不可用，则yield回去。</p>
-
-<p>其他部分大抵也是如此。这样一来，整个过程（lex、parse、compile）又是同步的了。</p>
-
-<p>当下一次有输入时，首先把输入的东西写进流，然后依次resume。yield回来的东西就是输出。</p>
-
-<p>但是Java没有协程……我不得不把需要阻塞的函数改名成feed，然后把原来大while中的内部状态写到类成员中保存，使feed看起来是可重入的。</p>
-
-<h2>ngscript中的协程</h2>
-
-<del>
-
-ngscript中的协程实现是一个类。用一个函数对象和参数列表初始化，就可以调用了。
-
-命名也是参考了lua的resume,yield,status三个函数。
-
-
-
-实现方式是，在resume中，把调用resume的frame，替换成调用函数的frame（主要是为了函数前面初始化形参变量的过程），
-
-然后切换环境，进入函数执行。这里有个小trick是，栈顶返回地址写的不是resume的返回地址，而是一段特别为了hook return的代码的地址。
-
-在这段代码中，会把当前coroutine的状态置为returned，然后再正常的返回。
-
-
-
-而在yield中，主要是把当前代码地址保存下来，然后找到真实的返回地址返回。
-
-
-
-ngscript关于coroutine的部分
-
-[https://github.com/wssccc/ngscript/blob/master/README.md#coroutine](https://github.com/wssccc/ngscript/blob/master/README.md#coroutine)
-
-</del>
-
-<h3>5.7更新：</h3>
-
-<p>昨天发现这个实现里面有一个bug，就是在协程函数体内部，把yield方法的引用传给更内层的函数，然后在更内层(= =)的函数yield出来时，就会出现类型错误。</p>
-
-<p>因为yield出来时没有恢复堆栈，一层的时候（只在resume进去的那个函数内调用yield）不会有错，如果在往内堆栈就不对了。</p>
-
-<p>现在ngscript使用的activation record保存方式是直接放在栈上，这样实现continuation也会有问题。</p>
+<p><a href="http://bbswssccc.sinaapp.com/tools/talk.php">测试网址</a></p>
             </div>
             <div class="">
                 <p>Tags: 
-                                            <a class="tag_a" href="../../tags/ngscript.html">ngscript</a>
-                                                <a class="tag_a" href="../../tags/E8AFADE8A880.html">语言</a>
-                                                <a class="tag_a" href="../../tags/coroutine.html">coroutine</a>
+                                            <a class="tag_a" href="../../tags/E8AEA1E7AE97E69CBA.html">计算机</a>
+                                                <a class="tag_a" href="../../tags/E5BEAEE4BFA1.html">微信</a>
+                                                <a class="tag_a" href="../../tags/E9A5BCE5B9B2E5909B.html">饼干君</a>
+                                                <a class="tag_a" href="../../tags/E69CBAE599A8E4BABA.html">机器人</a>
                                         </p>
             </div>
             <!-- JiaThis Button BEGIN -->
@@ -182,7 +343,7 @@ ngscript关于coroutine的部分
                     if (data instanceof Array)
                     {
                         for (i = 0; i < data.length; i++) {
-                            if (data[i].sname === 'ngscript-coroutine')
+                            if (data[i].sname === 'inside-biscuit')
                             {
                                 if (i !== 0)
                                 {
@@ -207,7 +368,7 @@ ngscript关于coroutine的部分
     </div>
     <div style="margin-left: 0px;">
         <!-- Duoshuo Comment BEGIN -->
-        <div class="ds-thread" data-thread-key="ngscript-coroutine/" data-title="ngscript加入了coroutine支持"></div>
+        <div class="ds-thread" data-thread-key="inside-biscuit/" data-title="饼干君的原理"></div>
         <script type="text/javascript">
             var duoshuoQuery = {short_name: "wssccc"};
             (function() {
