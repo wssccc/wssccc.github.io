@@ -3,36 +3,27 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-06-14 11:17:55</lastBuildDate>
-            <pubDate>2014-06-14 11:17:55</pubDate>
+            <lastBuildDate>2014-06-14 11:19:21</lastBuildDate>
+            <pubDate>2014-06-14 11:19:21</pubDate>
                             <item>
                     <title>Joel的12问</title>
                     <link>http://wssccc.github.io/blog/joel-q12</link>
                     <guid>http://wssccc.github.io/blog/joel-q12</guid>
                     <pubDate>2014-06-14 00:00</pubDate>
-                    <description><![CDATA[<p>*你们使用源代码控制吗</p>
-
-<p>*你们每步都做构建吗</p>
-
-<p>*你们做每日构建吗</p>
-
-<p>*你们有缺陷数据库吗</p>
-
-<p>*你们会在写新代码之前修复缺陷吗</p>
-
-<p>*你们有与当前工作吻合的进度安排吗</p>
-
-<p>*你们有规约吗</p>
-
-<p>*程序员工作环境安静吗</p>
-
-<p>*你们采用了市面上最好的工具吗</p>
-
-<p>*你们有测试人员吗</p>
-
-<p>*你们会要求应聘者在面试时写代码吗</p>
-
-<p>*你们做走廊可用性测试吗</p>
+                    <description><![CDATA[<ul>
+<li><p>你们使用源代码控制吗</p></li>
+<li><p>你们每步都做构建吗</p></li>
+<li><p>你们做每日构建吗</p></li>
+<li><p>你们有缺陷数据库吗</p></li>
+<li><p>你们会在写新代码之前修复缺陷吗</p></li>
+<li><p>你们有与当前工作吻合的进度安排吗</p></li>
+<li><p>你们有规约吗</p></li>
+<li><p>程序员工作环境安静吗</p></li>
+<li><p>你们采用了市面上最好的工具吗</p></li>
+<li><p>你们有测试人员吗</p></li>
+<li><p>你们会要求应聘者在面试时写代码吗</p></li>
+<li><p>你们做走廊可用性测试吗</p></li>
+</ul>
 ]]></description>
                 </item>
                                 <item>
