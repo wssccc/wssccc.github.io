@@ -46,266 +46,45 @@
     <div id="posts" class="container">
                     <div class="archive">
                 <div>
+                    <a href="../../posts/joel-q12/" class="archive-heading">Joel的12问</a>
+                    <span class="time pull-right">2014-06-14 00:00</span>
+                </div>
+                <hr/>
+                <div class="archive-content">
+                    <p>*你们使用源代码控制吗</p>
+
+<p>*你们每步都做构建吗</p>
+
+<p>*你们做每日构建吗</p>
+
+<p>*你们有缺陷数据库吗</p>
+
+<p>*你们会在写新代码之前修复缺陷吗</p>
+
+<p>*你们有与当前工作吻合的进度安排吗</p>
+
+<p>*你们有规约吗</p>
+
+<p>*程序员工作环境安静吗</p>
+
+<p>*你们采用了市面上最好的工具吗</p>
+
+<p>*你们有测试人员吗</p>
+
+<p>*你们会要求应聘者在面试时写代码吗</p>
+
+<p>*你们做走廊可用性测试吗</p>
+                </div>
+                <hr/>            </div>
+                        <div class="archive">
+                <div>
                     <a href="../../posts/inside-biscuit/" class="archive-heading">饼干君的原理</a>
                     <span class="time pull-right">2014-06-05 00:00</span>
                 </div>
                 <hr/>
                 <div class="archive-content">
-                    <p><em>之前貌似有一篇饼干君做符号微分的<a href="../../posts/biscuit-diff/">文章</a></em></p>
-
-<p><em>应赵伯要求整理出以前写过的一篇讲饼干君聊天的原理的东西，原文在<a href="http://cloudbbs.org/forum.php?mod=viewthread&amp;tid=20040">SAE的bbs上</a>。</em></p>
-
-<p><br/></p>
-
-<p>sae给我们提供了分词服务，使用它可以很容易实现一个聊天机器人。 </p>
-
-<p>首先我们需要一个语料数据库，语料数据库的内容格式是一个句子，和它对应的回答。这样的格式可以很容易地收集到大量数据，比如对白，聊天记录什么的。 </p>
-
-<p>聊天机器人需要解决的问题是怎样从大量语料数据中找到最合适的回答。直接从输入语句找到回答是很复杂的，但是我们可以从语料数据库中找到最接近输入的句子，然后将它的对应的回答作为输入句子的回答。 </p>
-
-<p>比如数据库中有记录  </p>
-
-<table cellspacing="0" class="t_table" style="width:50%">
-
-    <tbody>
-
-        <tr>
-
-            <td> 1</td><td> 你好</td><td>好</td>
-
-        </tr>
-
-        <tr>
-
-            <td> 2</td><td> 你好吗</td><td>我很好 </td>
-
-        </tr>
-
-    </tbody>
-
-</table>
-
-<p>那么对于一个输入 </p>
-
-<blockquote>
-  <p>你最近好吗</p>
-</blockquote>
-
-<p>应该是匹配到</p>
-
-<blockquote>
-  <p>我很好</p>
-</blockquote>
-
-<p>这个回答上，而不是<code>好</code>这个回答 </p>
-
-<p>下面来介绍一下具体的实现过程。 </p>
-
-<p>首先我们需要将输入句子划分为很多段。划分的方法有很多种，最简单的是直接划分成字符数组。但是划分成字符数组有一些问题，因为句子是由词语组成的，直接划分成一个一个的字，就丢失了很多有用的信息，这对于后面的查找和匹配会产生一些影响。所以这里使用sae分词，可以很好的将句子有意义地划分成词语。 </p>
-
-<p>上面的句子可以划分成</p>
-
-<blockquote>
-  <p>[0] => Array ( [word] => 你 [word_tag] => 123 [index] => 0 )</p>
-  
-  <p>[1] => Array ( [word] => 最近 [word_tag] => 132 [index] => 1 ) </p>
-  
-  <p>[2] => Array ( [word] => 好 [word_tag] => 10 [index] => 2 ) </p>
-  
-  <p>[3] => Array ( [word] => 吗 [word_tag] => 160 [index] => 3 )</p>
-</blockquote>
-
-<p>这里的word_tag是词语的属性，我们可以用它过滤掉一些无用的词语和标点符号。得到词语的数组之后，在数据库中找到包含各个词的记录集合。</p>
-
-<table cellspacing="0" class="t_table" style="width:50%">
-
-    <tbody>
-
-        <tr>
-
-            <td> 你</td><td> 1,2</td></tr><tr><td> 最近</td><td> 空</td>
-
-        </tr>
-
-        <tr>
-
-            <td> 好</td><td> 1,2</td></tr><tr><td> 吗</td><td> 2</td>
-
-        </tr>
-
-    </tbody>
-
-</table>
-
-<p>然后找出记录集中出现最多的记录id，很明显可以看出应该选择2作为回答。这里因为数据量比较小，所以只有一个，实际上记录id也可能会是很多个，因为也可能出现多个回答都很适合的情况，这时候可以随机从中取一个作为结果。 </p>
-
-<p>找到记录id之后，再从数据库中找到对应的记录，它的回答字段就是我们要找的合适的回答了。 </p>
-
-<p>说了这么多，现在来编码实现。</p>
-
-<pre class="brush: php">
-
-<?php
-
-/*
-
-*  wssccc all rights reserved
-
-*/
-
-if (is_string($_GET['msg'])) {
-
-  $str = $_GET['msg'];
-
-} else {
-
-  echo 'no input';
-
-  exit();
-
-}
-
-$disabledTags = array(SaeSegment::POSTAG_ID_V_SH, SaeSegment::POSTAG_ID_W_SP, SaeSegment::POSTAG_ID_W_S,
-
-  SaeSegment::POSTAG_ID_W_R, SaeSegment::POSTAG_ID_W_L, SaeSegment::POSTAG_ID_W_H,
-
-  SaeSegment::POSTAG_ID_W_D, SaeSegment::POSTAG_ID_W);
-
-$saeSeg = new SaeSegment();
-
-$rawSegResult = $saeSeg->segment($str, 1);
-
-// 失败时输出错误码和错误信息
-
-if ($rawSegResult === false) {
-
-  var_dump($saeSeg->errno(), $saeSeg->errmsg());
-
-}
-
-//处理词语数组
-
-$segResult = array();
-
-foreach ($rawSegResult as $elem) {
-
-  //删除禁用的词语类型
-
-  if (!in_array($elem['word_tag'], $disabledTags)) {
-
-    array_push($segResult, $elem);
-
-  }
-
-}
-
-echo '<br>分词结果：<br>';
-
-var_dump($segResult);  //输出
-
-echo '<br>';
-
-$hitSet = array(); //命中集合
-
-$mysql = new SaeMysql();
-
-//查询包含每个词语的记录集合
-
-foreach ($segResult as $segitem) {
-
-  $sql = "SELECT id FROM corpus where txt like '%" . $segitem['word'] . "%'";
-
-  $data = $mysql->getData($sql);
-
-  if ($data != NULL) {
-
-    foreach ($data as $row) {
-
-    //把结果存到临时变量
-
-    $id = $row['id'];
-
-    if (isset($hitSet[$id])) {
-
-      ++$hitSet[$id];
-
-    } else {
-
-      $hitSet[$id] = 1;
-
-    }
-
-    }
-
-  }
-
-}
-
-if ($mysql->errno() != 0) {
-
-  die('Error:' . $mysql->errmsg());
-
-}
-
-var_dump($hitSet);
-
-if (count($hitSet) > 0) {
-
-  $maxhit = -1;
-
-  $maxhitIds = array(); //最大命中的id集合
-
-  foreach ($hitSet as $hitid => $cnt) {
-
-    if ($cnt > $maxhit) {
-
-    $maxhit = $cnt;
-
-    $maxhitIds = array($hitid);
-
-    }else if ($cnt == $maxhit) {
-
-    array_push($maxhitIds, $hitid);
-
-    }
-
-  }
-
-} else {
-
-  echo 'not found';
-
-  exit();
-
-}
-
-var_dump($maxhitIds);
-
-//随机选择一个
-
-$selected = $maxhitIds[array_rand($maxhitIds)];
-
-//通过id找到对应的
-
-$sql = "SELECT response FROM corpus WHERE id =$selected";
-
-$data = $mysql->getVar($sql);
-
-if ($data != NULL) {
-
-  $str = $data;
-
-}
-
-$mysql->closeDb();
-
-echo '回答: ' . $str;
-
-</pre>
-
-<p><a href="http://bbswssccc.sinaapp.com/tools/talk.php">测试网址</a></p>
-                </div>
-                <hr/>            </div>
+                                    </div>
+                            </div>
                         <div class="archive">
                 <div>
                     <a href="../../posts/ngscript-coroutine/" class="archive-heading">ngscript加入了coroutine支持</a>
@@ -346,15 +125,6 @@ echo '回答: ' . $str;
                 <div>
                     <a href="../../posts/ngscript-part-2/" class="archive-heading">ngscript之一：词法分析</a>
                     <span class="time pull-right">2014-03-04 13:35</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-part-1/" class="archive-heading">ngscript之零</a>
-                    <span class="time pull-right">2014-03-04 12:04</span>
                 </div>
                 <hr/>
                 <div class="archive-content">

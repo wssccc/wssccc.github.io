@@ -3,9 +3,39 @@
             <title>wssccc in action</title>
             <description>wssccc</description>
             <link>http://wssccc.github.io/blog/</link>
-            <lastBuildDate>2014-06-04 17:25:22</lastBuildDate>
-            <pubDate>2014-06-04 17:25:22</pubDate>
+            <lastBuildDate>2014-06-14 11:17:55</lastBuildDate>
+            <pubDate>2014-06-14 11:17:55</pubDate>
                             <item>
+                    <title>Joel的12问</title>
+                    <link>http://wssccc.github.io/blog/joel-q12</link>
+                    <guid>http://wssccc.github.io/blog/joel-q12</guid>
+                    <pubDate>2014-06-14 00:00</pubDate>
+                    <description><![CDATA[<p>*你们使用源代码控制吗</p>
+
+<p>*你们每步都做构建吗</p>
+
+<p>*你们做每日构建吗</p>
+
+<p>*你们有缺陷数据库吗</p>
+
+<p>*你们会在写新代码之前修复缺陷吗</p>
+
+<p>*你们有与当前工作吻合的进度安排吗</p>
+
+<p>*你们有规约吗</p>
+
+<p>*程序员工作环境安静吗</p>
+
+<p>*你们采用了市面上最好的工具吗</p>
+
+<p>*你们有测试人员吗</p>
+
+<p>*你们会要求应聘者在面试时写代码吗</p>
+
+<p>*你们做走廊可用性测试吗</p>
+]]></description>
+                </item>
+                                <item>
                     <title>饼干君的原理</title>
                     <link>http://wssccc.github.io/blog/inside-biscuit</link>
                     <guid>http://wssccc.github.io/blog/inside-biscuit</guid>
@@ -942,52 +972,6 @@ Ff-&gt;cos Ff
 <p>现在ngscript使用的是LALR(1)的分析方法，分析工具是我自己实现的一个能读入bnf动态生成分析器的东西。</p>
 
 <p>从下一篇开始我会把各个部分介绍一遍。</p>
-]]></description>
-                </item>
-                                <item>
-                    <title>饼干君这一年</title>
-                    <link>http://wssccc.github.io/blog/biscuit-of-the-year</link>
-                    <guid>http://wssccc.github.io/blog/biscuit-of-the-year</guid>
-                    <pubDate>2014-02-22 00:00</pubDate>
-                    <description><![CDATA[<p>用info命令可以看到到现在为止，饼干君已经存在1年零1月零3天了。</p>
-
-<p>饼干君的诞生是由于以下几个事情：</p>
-
-<ol>
-
-<li>赵伯弄了一个微信公共账号</li>
-
-<li>我通过了SAE高级开发者认证</li>
-
-<li>知道了被玩坏的白丝魔理沙</li>
-
-</ol>
-
-<p>觉得自己也可以实现一个，所以在1月份的时候，用了2个晚上的时间，实现了一个基于语料库的问答系统。</p>
-
-<p>然后凭着仅存的一点php知识，给弄到SAE上跑起来了。</p>
-
-<p>饼干君之后我开始关注一些机器人，后来看到了Moec Core这个东西。http://wiki.oekaki.so/</p>
-
-<p>这是一个神秘的组织……</p>
-
-<p>也就是那个时候看到了NekoScript。</p>
-
-<p>当时的设想是，饼干君使用脚本语言来实现后台逻辑，这个事情后来不了了之。</p>
-
-<p>没有找到合适的脚本语言是一方面，另一个更重要的问题是我想做一个像NekoScript的东西。</p>
-
-<p>这个时候我想起来wolfram alpha，想起了maxima。然后开始尝试从cellular automata和lisp入手。</p>
-
-<p>cellular automata……只能说太前沿了……</p>
-
-<p>对lisp以及functional programming的探索一直持续了很久。看到parser combinator才算知道了一点里面的精妙之处。</p>
-
-<p>探索parser的过程中，发现了大神王垠，不过他的blog要辩证的看……</p>
-
-<p>饶了一大圈，最终理解的也就是GEB里面的内容，然后用这个东西完成了符号微分的程序，然后加到了饼干君里面。</p>
-
-<p>这个符号微分程序还没有到实用的级别，它只是为了证明我也可以写symbolic calculus的东西了。</p>
 ]]></description>
                 </item>
                         </channel>
