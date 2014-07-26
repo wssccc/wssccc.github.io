@@ -33,14 +33,12 @@
         </head>
         <body style="">
             <!--wp header--> 
-            <header id="masthead" class="site-header" role="banner">
+            <div id="masthead" class="site-header" role="banner"></div>
+            <!--wp header--> 
+            <div id="page-main-container" class="container">
                 <a class="home-link" href="../../../" title="wssccc in action" rel="home">
                     <h1 class="site-title">wssccc in action</h1>
-                    <h2 class="site-description"></h2>
                 </a>
-            </header>
-            <!--wp header--> 
-            <div class="container">
                 <div class="site-rss-container">
                     <a href="../../..//blog/rss.xml" rel="subscribe-rss" title="subscribe via RSS"><img src="../../../assets/img/atom.png" class="pull-right no-fix-img"></a>
                 </div>
@@ -55,7 +53,7 @@
         <div class="post">
             <div>
                 <a href="index.html" class="post-heading">﻿ngscript之二：语法分析</a>
-                <span class="time pull-right">2014-03-06 19:07</span>
+                <span class="time pull-right"><span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-03-06 19:07</span>
             </div>
             <div class="post-content">
                 <p>ngscript的语法分析使用的是我自己的语法分析工具<a href="https://github.com/wssccc/parseroid.git">parseroid</a>。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。</p>
