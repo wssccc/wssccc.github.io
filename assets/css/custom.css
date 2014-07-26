@@ -107,6 +107,19 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 20px;
 }
 
+.site-rss-container
+{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin: 2px;
+    transform:rotate(180deg);
+    -ms-transform:rotate(180deg); /* IE 9 */
+    -moz-transform:rotate(180deg); /* Firefox */
+    -webkit-transform:rotate(180deg); /* Safari and Chrome */
+    -o-transform:rotate(180deg); /* Opera */
+}
+
 .footer
 {
     font-family: "Times New Roman", Times, serif;
@@ -179,4 +192,36 @@ a{
 
 .site-heading{
     color: #428bca;
+}
+
+.site-header {
+    background: url(../img/star.png) no-repeat scroll top;
+    background-size: 1600px auto;
+    position: relative;
+    top: 0px;
+}
+
+
+.home-link {
+    color: #141412;
+    display: block;
+    margin: 0 auto;
+    max-width: 1080px;
+    min-height: 230px;
+    padding: 0 20px;
+    text-decoration: none;
+    width: 100%;
+}
+
+.site-title {
+    font-size: 60px;
+    font-weight: bold;
+    line-height: 1;
+    margin: 0;
+    padding: 58px 0 10px;
+}
+
+#masthead {
+    margin-bottom: -80px;
+    z-index: -1;
 }
