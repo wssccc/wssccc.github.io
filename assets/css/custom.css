@@ -6,74 +6,71 @@
     Author     : wssccc <wssccc@qq.com>
 */
 
-body{
+body {
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     background-color: #fbfbfb;
     color: #080000;
     /*background-image: url(../img/pinstripe-light.png);*/
 }
 
-.breadcrumb
-{
+.breadcrumb {
     font-size: 20px;
 }
 
-a{
+a {
     text-decoration: none;
     -webkit-transition: color 0.3s;
     -moz-transition: color 0.3s;
     -o-transition: color 0.3s;
     transition: color 0.3s;
 }
-.archive-heading
-{
+
+.archive-heading {
     font-size: 20px;
     font-weight: bold;
 }
 
-.archive-content
-{
+.archive-content {
     font-size: 18px;
     line-height: 29px;
     color: #080000;
 }
 
-hr{
+hr {
     margin-top: 5px;
     margin-bottom: 15px;
 }
 
-.archive{
+.archive {
     margin-bottom: 20px;
 }
-.post{
+
+.post {
     margin-bottom: 10px;
 }
-.time{
+
+.time {
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     color: #bc360a;
     margin-top: 8px;
     margin-right: 2em;
 }
 
-.container
-{
+.container {
     max-width: 800px;
 }
 
-.post-heading
-{
+.post-heading {
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     font-size: 25px;
     font-weight: bold;
 }
 
-.tag-heading
-{
+.tag-heading {
     font-size: 25px;
 }
-.post-content
-{
+
+.post-content {
     font-size: 18px;
     line-height: 29px;
     color: #080000;
@@ -92,18 +89,16 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
 }
 
-.site-heading
-{
+.site-heading {
     font-size: 33px;
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
 }
-.site-heading-container
-{
+
+.site-heading-container {
     margin-bottom: 20px;
 }
 
-.site-rss-container
-{
+.site-rss-container {
     position: absolute;
     right: 0px;
     top: 0px;
@@ -115,50 +110,45 @@ h1, h2, h3, h4, h5, h6 {
     -o-transform:rotate(180deg); /* Opera */
 }
 
-.footer
-{
+.footer {
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     font-size: 15px;
 }
 
-.rss{
+.rss {
 }
 
-.tag_a{
+.tag_a {
     margin-left: 10px;
 }
 
-.post-content img{
+.post-content img {
     max-width: 100%;
 
 }
 
-.archive-content img{
+.archive-content img {
     max-height: 300px;
 }
 
-#desc
-{
+#desc {
     font-size: 20px;
     line-height: 30px;
     color: #080000;
 }
 
-#desc:first-letter
-{
+#desc:first-letter {
     font-size: 30px;
     font-weight: bold;
 }
 
-#desc-heading
-{
+#desc-heading {
     font-family:  "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     font-size: 15px;
     padding-bottom: 20px;
 }
 
-
-img.user-image{
+img.user-image {
     cursor: url(../img/big.cur) ,auto!important;
 }
 
@@ -169,22 +159,23 @@ hr {
     border-top: 1px solid #ddd;
 }
 
-.container #posts{
+.container #posts {
     padding-right: 0px;
     padding-left: 0px;
     width: 100%;
 }
-.archive:first-child .archive-heading{
+
+.archive:first-child .archive-heading {
     font-size: 25px;
 }
 
-a{
+a {
     text-decoration: none;
     color: black;
     text-shadow: 0px 1px 2px #ccc;
 }
 
-.site-heading{
+.site-heading {
     color: #428bca;
 }
 
@@ -194,7 +185,6 @@ a{
     position: relative;
     top: 0px;
 }
-
 
 .home-link {
     color: #141412;
