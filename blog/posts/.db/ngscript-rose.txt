@@ -1,0 +1,21 @@
+ngscript更新
+2014-10-05
+计算机 ngscript 语言
+
+上半年去赛门铁克实习的时候完成了ngscript大部分的功能，然后忙着搬砖很多bug都没修。
+8月份回到学校里，终于有时间整自己的东西了。
+
+首先当然是修了coroutine的bug。之前实现try-catch的时候就用了context切换，当时恢复stack只是一直弹啊弹，
+其实只要把stack放进context，然后切一切就好了。coroutine也用了这个，最终整了个非对称的coroutine。
+
+修coroutine的时候看到一个叫Gwenlliana 的伙计，聊了聊然后看了他的github，他实现了部分ecmascript [这里](https://github.com/Kontinuation/amce)。
+
+然后发现了一个rose.js。以前ngscript也就跑跑斐波那契数列什么的渣渣程序，总觉得画风不对，于是把rose.js拿过来做重点支持的对象。
+
+趁着国庆的假期，把前端都修了修。然后rose.js跑起来了。
+![rose](rose-screenshot.png)
+
+不过昨晚跑的时候这玩意特别慢，速度只能到200~300 点/秒。
+早上起来把vm也修了，速度快了30倍……
+
+虽然还是很慢……
