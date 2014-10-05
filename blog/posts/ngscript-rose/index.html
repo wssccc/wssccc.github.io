@@ -45,18 +45,18 @@
                     <div>
         <ol class="breadcrumb">
             <li><a href="../../../">wssccc</a></li>
-            <li><a href="../../">archive</a></li>
+            <li><a href="../../archives/1/">archive</a></li>
+            <li><a href="#">post</a></li>
         </ol>
     </div>
     <div id="posts" class="container">
-                    <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-rose/" class="archive-heading">ngscript更新</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-10-05 00:00</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                    <p>上半年去赛门铁克实习的时候完成了ngscript大部分的功能，然后忙着搬砖很多bug都没修。</p>
+        <div class="post">
+            <div>
+                <a href="index.html" class="post-heading">ngscript更新</a>
+                <span class="time pull-right"><span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-10-05 00:00</span>
+            </div>
+            <div class="post-content">
+                <p>上半年去赛门铁克实习的时候完成了ngscript大部分的功能，然后忙着搬砖很多bug都没修。</p>
 
 <p>8月份回到学校里，终于有时间整自己的东西了。</p>
 
@@ -77,68 +77,83 @@
 <p>早上起来把vm也修了，速度快了30倍……</p>
 
 <p>虽然还是很慢……</p>
-                </div>
-                <hr/>            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/joel-q12/" class="archive-heading">Joel的12问</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-06-14 00:00</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/inside-biscuit/" class="archive-heading">饼干君的原理</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-06-05 00:00</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-coroutine/" class="archive-heading">ngscript加入了coroutine支持</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-05-04 00:00</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-online-demo/" class="archive-heading">try ngscript online</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-04-29 22:55</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-part-4/" class="archive-heading">ngscript之三：语法设计</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-04-06 13:10</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                        <div class="archive">
-                <div>
-                    <a href="../../posts/ngscript-part-3/" class="archive-heading">﻿ngscript之二：语法分析</a>
-                    <span class="time pull-right"><span class="glyphicon glyphicon-time"></span> 2014-03-06 19:07</span>
-                </div>
-                <hr/>
-                <div class="archive-content">
-                                    </div>
-                            </div>
-                </div>
+            </div>
+            <div class="">
+                <p>Tags: 
+                                            <a class="tag_a" href="../../tags/E8AEA1E7AE97E69CBA.html">计算机</a>
+                                                <a class="tag_a" href="../../tags/ngscript.html">ngscript</a>
+                                                <a class="tag_a" href="../../tags/E8AFADE8A880.html">语言</a>
+                                        </p>
+            </div>
+            <!-- JiaThis Button BEGIN -->
+            <div class="jiathis_style">
+                <a class="jiathis_button_tsina"></a>
+                <a class="jiathis_button_tqq"></a>
+                <a class="jiathis_button_weixin"></a>
+                <a class="jiathis_button_renren"></a>
+                <a class="jiathis_button_douban"></a>
+                <a class="jiathis_button_fb"></a>
+                <a class="jiathis_button_googleplus"></a>
+                <a class="jiathis_button_twitter"></a>
+                <a class="jiathis_button_qzone"></a>
+                <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank">更多</a>
+            </div>
+            <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1394078030301326" charset="utf-8"></script>
+            <!-- JiaThis Button END -->
+        </div>
+    </div>
     <div class="">
         <ul class="pager">
-            <li class="previous disabled"><a href="javascript:void(0)">&larr; Previous</a></li>
-            <li class="next "><a href="../2/">Next &rarr;</a></li>
+            <li class="pull-left"><a id="pre-post-archor" href="#">上一篇： <span id="pre-post-title"></span></a></li>
+            <li class="pull-right"><a id="next-post-archor" href="#">下一篇： <span id="next-post-title"></span></a></li>
         </ul>
+        <script>
+            $(document).ready(function()
+            {
+                $.getJSON('../indexer.json', null, function(data)
+                {
+                    if (data instanceof Array)
+                    {
+                        for (i = 0; i < data.length; i++) {
+                            if (data[i].sname === 'ngscript-rose')
+                            {
+                                if (i !== 0)
+                                {
+                                    $('#pre-post-archor').attr('href', data[i - 1].url);
+                                    $('#pre-post-title').text(data[i - 1].title);
+                                } else {
+                                    $('#pre-post-title').text('没有了');
+                                }
+                                if (i !== data.length - 1)
+                                {
+                                    $('#next-post-archor').attr('href', data[i + 1].url);
+                                    $('#next-post-title').text(data[i + 1].title);
+                                } else {
+                                    $('#next-post-title').text('没有了');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    </div>
+    <div style="margin-left: 0px;">
+        <!-- Duoshuo Comment BEGIN -->
+        <div class="ds-thread" data-thread-key="ngscript-rose/" data-title="ngscript更新"></div>
+        <script type="text/javascript">
+            var duoshuoQuery = {short_name: "wssccc"};
+            (function() {
+                var ds = document.createElement('script');
+                ds.type = 'text/javascript';
+                ds.async = true;
+                ds.src = 'http://static.duoshuo.com/embed.js';
+                ds.charset = 'UTF-8';
+                (document.getElementsByTagName('head')[0]
+                        || document.getElementsByTagName('body')[0]).appendChild(ds);
+            })();
+        </script>
+        <!-- Duoshuo Comment END -->
     </div>
                     <hr/>
                 <div class="footer">
