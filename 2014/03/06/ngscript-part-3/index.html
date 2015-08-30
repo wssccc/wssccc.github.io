@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      ngscript之二：语法分析 | wssccc 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="wssccc">
+    
+    
+      <meta name="description" content="ngscript的语法分析使用的是我自己的语法分析工具parseroid。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。生成parser的action table运算量还是有点大，所以在新版的parse">
+    
+
+    <meta name="description" content="ngscript的语法分析使用的是我自己的语法分析工具parseroid。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。生成parser的action table运算量还是有点大，所以在新版的parse">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngscript之二：语法分析 | wssccc">
+<meta property="og:url" content="http://blog.ngscript.org/2014/03/06/ngscript-part-3/index.html">
+<meta property="og:site_name" content="wssccc">
+<meta property="og:description" content="ngscript的语法分析使用的是我自己的语法分析工具parseroid。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。生成parser的action table运算量还是有点大，所以在新版的parse">
+<meta property="og:image" content="http://blog.ngscript.org/images/java-cps-parser.jpg">
+<meta property="og:image" content="http://blog.ngscript.org/images/grammar-cascade.jpg">
+<meta property="og:updated_time" content="2015-08-30T16:20:45.252Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ngscript之二：语法分析 | wssccc">
+<meta name="twitter:description" content="ngscript的语法分析使用的是我自己的语法分析工具parseroid。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。生成parser的action table运算量还是有点大，所以在新版的parse">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+
+    <script src="/js/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for wssccc"><img src="/avatar.jpg" width="80" alt="wssccc logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">wssccc</a></h1>
+
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">
+          我们在世纪末的流光中追寻过往，追寻那些渐渐模糊的面容
+        </p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客</a></li>
+              
+                
+                <li class="navigation__item"><a href="/about" title="" class="">关于</a></li>
+              
+                
+                <li class="navigation__item"><a href="/blogroll" title="" class="">链接</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+------------------------------ -->
+
+<nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/wssccc" title="wssccc on GitHub">
+      <i class='icon icon-social-github'></i>
+      <span class="label">GitHub</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+  <article class="post-container post-container--single">
+
+    <header class="post-header">
+    
+      
+      <div class="post-meta">
+        <time datetime="2014-03-06" class="post-meta__date date">2014-03-06</time> &#8226; 
+
+        <span class="post-meta__tags tags">
+
+            <font class="categories">
+              
+            </font>
+            
+              <font class="tags">
+                <a class="tags-link" href="/tags/ngscript/">ngscript</a>, <a class="tags-link" href="/tags/编译器/">编译器</a>, <a class="tags-link" href="/tags/语法分析/">语法分析</a>, <a class="tags-link" href="/tags/语言/">语言</a>
+              </font>
+            
+
+        </span>
+      </div>
+      
+
+      <h1 class="post-title">ngscript之二：语法分析</h1>
+    </header>
+
+    <section class="post">
+      <p>ngscript的语法分析使用的是我自己的语法分析工具<a href="https://github.com/wssccc/parseroid.git" target="_blank" rel="external">parseroid</a>。与常用cc工具（yacc、bison、javacc、antlr、etc…）不同的是，parseroid生成的不是语法分析器的源程序，而是一个parser对象，直接可以用来执行parsing。也就是说，可以由BNF在执行阶段动态生成parser。<br>生成parser的action table运算量还是有点大，所以在新版的parseroid里面table改成了serializable的，可以缓存下来免去生成table的过程。</p>
+<h2 id="实现parseroid">实现parseroid</h2><h3 id="文法描述">文法描述</h3><p>parseroid使用LALR(1)文法。<br>parseroid使用的文法描述文件是这个样子</p>
+<pre><code>//starter symbol 
+%start <span class="tag">&lt;<span class="title">program</span>&gt;</span>;
+%array <span class="tag">&lt;<span class="title">statements</span>&gt;</span> <span class="tag">&lt;<span class="title">param_list</span>&gt;</span> <span class="tag">&lt;<span class="title">params</span>&gt;</span>;
+%equiv <span class="tag">&lt;<span class="title">expr</span>&gt;</span> <span class="tag">&lt;<span class="title">expr1</span>&gt;</span> <span class="tag">&lt;<span class="title">expr2</span>&gt;</span> <span class="tag">&lt;<span class="title">expr3</span>&gt;</span> <span class="tag">&lt;<span class="title">expr4</span>&gt;</span> <span class="tag">&lt;<span class="title">expr5</span>&gt;</span> <span class="tag">&lt;<span class="title">expr6</span>&gt;</span> <span class="tag">&lt;<span class="title">expr7</span>&gt;</span> <span class="tag">&lt;<span class="title">expr8</span>&gt;</span> <span class="tag">&lt;<span class="title">nullable_expr</span>&gt;</span>;
+%filter semicolon comma;
+
+<span class="tag">&lt;<span class="title">program</span>&gt;</span> ::= <span class="tag">&lt;<span class="title">statements</span>&gt;</span>;
+//----------------------------------------------------------------------------
+//statements is a collection of statement;
+<span class="tag">&lt;<span class="title">statements</span>&gt;</span> ::= NULL;
+<span class="tag">&lt;<span class="title">statements</span>&gt;</span> ::= <span class="tag">&lt;<span class="title">statement</span>&gt;</span> <span class="tag">&lt;<span class="title">statements</span>&gt;</span>;
+//省略一些
+<span class="tag">&lt;<span class="title">throw_exception</span>&gt;</span> ::= throw <span class="tag">&lt;<span class="title">expr</span>&gt;</span> semicolon =&gt; <span class="tag">&lt;<span class="title">expr</span>&gt;</span>;
+//再省略一些
+</code></pre><p>%开头的是注记，有这几种</p>
+<ul>
+<li>%start 指定一个起始符</li>
+<li>%equiv 标记等价类，在生成语法树之后的reduce过程中，会把等价类合并</li>
+<li>%filter 也是在reduce过程中，会把这些节点去掉</li>
+<li>=&gt; 标记的用处是在规约生成语法树的时候调整AST，如这句 <code>&lt;throw_exception&gt; ::= throw &lt;expr&gt; semicolon =&gt; &lt;expr&gt;;</code> <br>这句的意思是用throw <expr> semicolon的结构规约到<throw_exception>，但是只保存<expr>这个元素，主要是为了后面处理语法树方便和看起来更加顺眼……</expr></throw_exception></expr></li>
+</ul>
+<h3 id="实现">实现</h3><p>LALR（1）的具体细节书本上都有，就不再阐述了。</p>
+<h3 id="错误恢复">错误恢复</h3><p>parseroid使用error符号错误恢复。<br>具体做法是写这样的产生式<code>&lt;statements&gt; ::= error semicolon &lt;statements&gt;;</code><br>效果是，在遇到statements中的错误之后，会把错误部分parsing为一个error节点，然后同步到semicolon的位置继续parsing。</p>
+<p>具体过程</p>
+<ul>
+<li>不断的弹出栈顶，直到一个特定的状态，在该状态中error符号的动作为移进。</li>
+<li>移进error符号</li>
+<li>不断丢弃输入符号，直到一个特定的向前查看符号，它在当前状态，对应一个非出错的动作。</li>
+<li>重新开始正常分析</li>
+</ul>
+<h3 id="语法树简化">语法树简化</h3><ul>
+<li>合并等价类</li>
+<li>删除无用的嵌套</li>
+<li>删除不必要的节点</li>
+</ul>
+<p>合并等价类是因为在parseroid的文法描述中，没有显式指定算符的优先级，需要使用产生式的层次来表现。<br>于是就有很多<code>&lt;expr1&gt;</code> <code>&lt;expr2&gt;</code>这种东西，但是他们实质上都可以当成expr来处理。<br>无用的嵌套是因为在<code>&lt;expr1&gt;</code>这种化为<code>&lt;expr&gt;</code>之后，可能出现如<code>&lt;expr&gt; -&gt; &lt;expr&gt; -&gt; number</code>这种，也是可以简化的。<br>不必要的节点，就是左括号右括号这种。</p>
+<p>parseroid源代码在这里<br><a href="https://github.com/wssccc/parseroid.git" target="_blank" rel="external">https://github.com/wssccc/parseroid.git</a></p>
+<p>后面我会用lexeroid和parseroid实现ngscript的解析器。</p>
+<h2 id="其它分析方法的介绍">其它分析方法的介绍</h2><p>语法分析的方法有很多，简单介绍一下。</p>
+<h3 id="SLR(1)">SLR(1)</h3><p>编译原理的大作业就是实现SLR（1），可以处理这样的文法</p>
+<pre><code>S-&gt;<span class="comment"># Ee #</span>
+Ee-&gt;Ee + Ti|<span class="string">Ee - Ti</span>|Ti
+Ti-&gt;Ti <span class="keyword">*</span> Ff|<span class="string">Ti / Ff</span>|Ff
+Ff-&gt;( Ee )|<span class="string">d
+Ff-&gt;sin Ff
+Ff-&gt;cos Ff</span>
+</code></pre><p>当时觉得只要文法改改就能用，后来真正用的时候才发现是个坑……<br>书上是把它当过渡方法来讲的</p>
+<h3 id="Parser组合子">Parser组合子</h3><p>最开始知道这个是在<br>这里 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/26/2090645.html" target="_blank" rel="external">自己动手开发编译器（八）用Linq编写解析器组合子</a><br>这里 <a href="http://www.ibm.com/developerworks/cn/java/j-lo-compose/" target="_blank" rel="external">利用 Java 实现组合式解析器</a><br>还有这里 <a href="http://www.cnblogs.com/Ninputer/archive/2011/07/03/2096944.html" target="_blank" rel="external">自己动手开发编译器（九）CPS风格的解析器组合子</a></p>
+<p>我也用Java实现了一个，因为Java没有lambda，硬是用匿名类整了出来。也是CPS的，带错误恢复。<br>运行起来大概是这样<br><img src="/images/java-cps-parser.jpg" alt="java-cps-parser.jpg"><br>不过解析器组合子的缺点也很明显，就是太难调试了。而且文法是用代码的形式在程序中描述的，太复杂之后我就被绕晕了 = =</p>
+<h3 id="LL（1）">LL（1）</h3><p>LL（1）应该算是比较容易实现的，不过需要对文法做一些调整，消除左递归，提取左公因式什么的，后来写到二元运算符的文法我还是觉得LL（1）不能忍。</p>
+<h3 id="LALR（1）">LALR（1）</h3><p>书上介绍分析方法的顺序LALR（1）一般是排在最后的，按这种设定应该是这个最靠谱了。<br>附一张图：<br><img src="/images/grammar-cascade.jpg" alt="grammar-cascade.jpg"></p>
+
+    </section>
+
+    
+  </article>
+
+
+            <footer class="footer">
+	<span class="footer__copyright">
+		本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/deed.zh">知识共享署名-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+	</span>
+    <span class="footer__copyright"><a href="http://uno.daleanthony.com" title="link to page for Uno Ghost theme">Uno theme</a> by <a href="http://daleanthony.com" title="link to website for Dale-Anthony">Dale-Anthony</a> | Redesign by <a href="http://letiantian.me" title="">樂天</a> | Customized by wssccc</span>
+</footer>
+        </div>
+    </div>
+
+    <!-- The main JavaScript file for Casper -->
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    <script src="/js/jquery.imagesloaded.min.js"></script>
+    <script src="/js/gallery.js"></script>
+    <script src="/js/jquery.githubRepoWidget.min.js"></script>
+
+    <!--kill ie6 -->
+    <!--[if IE 6]>
+      <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+    <![endif]-->
+
+    <!--  google analytics -->
+    <script>
+      // add your google analytics code here
+    </script>
+
+    <!-- totop -->
+    <div id="totop" style="position:fixed;bottom:50px;right:30px;cursor: pointer;">
+    <a title="back to top"><img style="width:30px;height:30px;" src="/images/totop.png"/></a>
+    </div>
+    <script>
+    (function($) { 
+      var upperLimit = 100;
+      var scrollElem = $('#totop');
+      var scrollSpeed = 500; 
+      scrollElem.hide();
+      $(window).scroll(function () {            
+        var scrollTop = $(document).scrollTop();       
+        if ( scrollTop > upperLimit ) {
+          $(scrollElem).stop().fadeTo(300, 1); // fade back in           
+        }else{       
+          $(scrollElem).stop().fadeTo(300, 0); // fade out
+        }
+      });
+      $(scrollElem).click(function(){
+        $('html, body').animate({scrollTop:0}, scrollSpeed); return false;
+      });
+    })(jQuery);
+    </script>
+
+    <!-- fancybox -->
+    
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+    <script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript">
+      (function($){
+        $('.fancybox').fancybox();
+      })(jQuery);
+    </script>
+    
+
+</body>
+</html>

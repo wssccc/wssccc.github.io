@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      ngscript之三：语法设计 | wssccc 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="wssccc">
+    
+    
+      <meta name="description" content="这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。于是我去读了这本书，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。于是ngscript就愉快的决定使用类似js语法、编译成字节码了。
+这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。pa">
+    
+
+    <meta name="description" content="这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。于是我去读了这本书，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。于是ngscript就愉快的决定使用类似js语法、编译成字节码了。
+这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。pa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngscript之三：语法设计 | wssccc">
+<meta property="og:url" content="http://blog.ngscript.org/2014/04/06/ngscript-part-4/index.html">
+<meta property="og:site_name" content="wssccc">
+<meta property="og:description" content="这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。于是我去读了这本书，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。于是ngscript就愉快的决定使用类似js语法、编译成字节码了。
+这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。pa">
+<meta property="og:image" content="http://blog.ngscript.org/images/ngscript-ast.png">
+<meta property="og:updated_time" content="2015-08-30T16:17:56.808Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ngscript之三：语法设计 | wssccc">
+<meta name="twitter:description" content="这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。于是我去读了这本书，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。于是ngscript就愉快的决定使用类似js语法、编译成字节码了。
+这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。pa">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+
+    <script src="/js/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for wssccc"><img src="/avatar.jpg" width="80" alt="wssccc logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">wssccc</a></h1>
+
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">
+          我们在世纪末的流光中追寻过往，追寻那些渐渐模糊的面容
+        </p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客</a></li>
+              
+                
+                <li class="navigation__item"><a href="/about" title="" class="">关于</a></li>
+              
+                
+                <li class="navigation__item"><a href="/blogroll" title="" class="">链接</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+------------------------------ -->
+
+<nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/wssccc" title="wssccc on GitHub">
+      <i class='icon icon-social-github'></i>
+      <span class="label">GitHub</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+  <article class="post-container post-container--single">
+
+    <header class="post-header">
+    
+      
+      <div class="post-meta">
+        <time datetime="2014-04-06" class="post-meta__date date">2014-04-06</time> &#8226; 
+
+        <span class="post-meta__tags tags">
+
+            <font class="categories">
+              
+            </font>
+            
+              <font class="tags">
+                <a class="tags-link" href="/tags/ngscript/">ngscript</a>, <a class="tags-link" href="/tags/语法设计/">语法设计</a>, <a class="tags-link" href="/tags/语言/">语言</a>
+              </font>
+            
+
+        </span>
+      </div>
+      
+
+      <h1 class="post-title">ngscript之三：语法设计</h1>
+    </header>
+
+    <section class="post">
+      <p>这是第四篇了，之所以隔了这么久才写，一方面是因为最近开始实习了，另一方面是因为设计语法真是要考虑很多东西。<br>于是我去读了<a href="http://book.douban.com/subject/25735333/" target="_blank" rel="external">这本书</a>，里面实现了两种语言，一种跟js差不多语法，用ast解释执行；另一种语法类似java，编译成字节码执行。<br>于是ngscript就愉快的决定使用类似js语法、编译成字节码了。</p>
+<p>这之间还看了一本《flex与bison》，主要看了看LALR（1）中冲突的处理和写文法要注意的事情。<br>parseroid加上这个描述，就可以分析出ngscript程序的语法树。大概是这个样子<br><img src="/images/ngscript-ast.png" alt="ngscript-ast.png"><br>现在的BNF已经写成下面这个样子了。可能还会不断的改。常用的控制结构和try…catch都有。<br>生成树之后就是编译成字节码了，这个会在下一篇中详述。</p>
+<pre><code>//starter symbol 
+%start <span class="variable">&lt;program&gt;</span>;
+%array <span class="variable">&lt;statements&gt;</span> <span class="variable">&lt;param_list&gt;</span> <span class="variable">&lt;params&gt;</span>;
+%equiv <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;expr1&gt;</span> <span class="variable">&lt;expr2&gt;</span> <span class="variable">&lt;expr3&gt;</span> <span class="variable">&lt;expr4&gt;</span> <span class="variable">&lt;expr5&gt;</span> <span class="variable">&lt;expr6&gt;</span> <span class="variable">&lt;expr7&gt;</span> <span class="variable">&lt;expr8&gt;</span> <span class="variable">&lt;nullable_expr&gt;</span>;
+%filter semicolon comma;
+
+<span class="variable">&lt;program&gt;</span> ::= <span class="variable">&lt;statements&gt;</span>;
+//----------------------------------------------------------------------------
+//statements is a collection of statement;
+<span class="variable">&lt;statements&gt;</span> ::= NULL;
+<span class="variable">&lt;statements&gt;</span> ::= <span class="variable">&lt;statement&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+//----------------------------------------------------------------------------
+//statement forms
+%equiv <span class="variable">&lt;statement&gt;</span> <span class="variable">&lt;flow_statement&gt;</span> <span class="variable">&lt;expr_statement&gt;</span> <span class="variable">&lt;fc_statement&gt;</span>;
+<span class="variable">&lt;statement&gt;</span> ::= <span class="variable">&lt;flow_statement&gt;</span>;
+<span class="variable">&lt;statement&gt;</span> ::= <span class="variable">&lt;expr_statement&gt;</span>;
+<span class="variable">&lt;statement&gt;</span> ::= <span class="variable">&lt;fc_statement&gt;</span>;
+<span class="variable">&lt;statement&gt;</span> ::= <span class="variable">&lt;throw_exception&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;function_decl&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;if_block&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;for_block&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;if_else_block&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;while_block&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;try_block&gt;</span>;
+<span class="variable">&lt;flow_statement&gt;</span> ::= <span class="variable">&lt;switch_block&gt;</span>;
+<span class="variable">&lt;expr_statement&gt;</span> ::= <span class="variable">&lt;expr&gt;</span> semicolon;
+<span class="variable">&lt;throw_exception&gt;</span> ::= throw <span class="variable">&lt;expr&gt;</span> semicolon =&gt; <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;fc_statement&gt;</span> ::= <span class="variable">&lt;return_val&gt;</span>;
+<span class="variable">&lt;fc_statement&gt;</span> ::= <span class="variable">&lt;return_void&gt;</span>;
+<span class="variable">&lt;fc_statement&gt;</span> ::= break semicolon;
+<span class="variable">&lt;fc_statement&gt;</span> ::= continue semicolon;
+<span class="variable">&lt;return_val&gt;</span> ::= return <span class="variable">&lt;expr&gt;</span> semicolon =&gt; <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;return_void&gt;</span> ::= return semicolon;
+//error handling
+//<span class="variable">&lt;statement&gt;</span> ::= ERROR semicolon;
+//----------------------------------------------------------------------------
+//details of function declaration
+<span class="variable">&lt;function_decl&gt;</span> ::= function ident lparen <span class="variable">&lt;param_list&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt;    ident <span class="variable">&lt;param_list&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+<span class="variable">&lt;param_list&gt;</span> ::= ident comma <span class="variable">&lt;param_list&gt;</span>;
+<span class="variable">&lt;param_list&gt;</span> ::= ident;
+<span class="variable">&lt;param_list&gt;</span> ::= NULL;
+//----------------------------------------------------------------------------
+//details of if <span class="built_in">block</span> and else
+<span class="variable">&lt;if_block&gt;</span> ::= if lparen <span class="variable">&lt;expr&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;statements&gt;</span> ;
+<span class="variable">&lt;if_else_block&gt;</span> ::= if lparen <span class="variable">&lt;expr&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly else lcurly <span class="variable">&lt;statements&gt;</span> rcurly 
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;statements&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+//----------------------------------------------------------------------------
+//details of expr
+<span class="variable">&lt;expr&gt;</span> ::= <span class="variable">&lt;expr&gt;</span> assign <span class="variable">&lt;expr1&gt;</span>                =&gt; assign <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;expr1&gt;</span>;
+<span class="variable">&lt;expr&gt;</span> ::= <span class="variable">&lt;expr&gt;</span> sub_assign <span class="variable">&lt;expr1&gt;</span>            =&gt; sub_assign <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;expr1&gt;</span>;
+<span class="variable">&lt;expr&gt;</span> ::= <span class="variable">&lt;expr1&gt;</span>;
+<span class="variable">&lt;expr1&gt;</span> ::= <span class="variable">&lt;expr1&gt;</span> or <span class="variable">&lt;expr2&gt;</span>                  =&gt; or <span class="variable">&lt;expr1&gt;</span> <span class="variable">&lt;expr2&gt;</span>;
+<span class="variable">&lt;expr1&gt;</span> ::= <span class="variable">&lt;expr2&gt;</span>;
+<span class="variable">&lt;expr2&gt;</span> ::= <span class="variable">&lt;expr2&gt;</span> and <span class="variable">&lt;expr3&gt;</span>                 =&gt; and <span class="variable">&lt;expr2&gt;</span> <span class="variable">&lt;expr3&gt;</span>;
+<span class="variable">&lt;expr2&gt;</span> ::= <span class="variable">&lt;expr3&gt;</span>;
+<span class="variable">&lt;expr3&gt;</span> ::= <span class="variable">&lt;expr3&gt;</span> eq <span class="variable">&lt;expr4&gt;</span>             =&gt; eq <span class="variable">&lt;expr3&gt;</span> <span class="variable">&lt;expr4&gt;</span>;
+<span class="variable">&lt;expr3&gt;</span> ::= <span class="variable">&lt;expr3&gt;</span> neq <span class="variable">&lt;expr4&gt;</span>          =&gt; neq <span class="variable">&lt;expr3&gt;</span> <span class="variable">&lt;expr4&gt;</span>;
+<span class="variable">&lt;expr3&gt;</span> ::= <span class="variable">&lt;expr4&gt;</span>;
+<span class="variable">&lt;expr4&gt;</span> ::= <span class="variable">&lt;expr4&gt;</span> gt <span class="variable">&lt;expr5&gt;</span>                  =&gt; gt <span class="variable">&lt;expr4&gt;</span> <span class="variable">&lt;expr5&gt;</span>;
+<span class="variable">&lt;expr4&gt;</span> ::= <span class="variable">&lt;expr4&gt;</span> lt <span class="variable">&lt;expr5&gt;</span>                  =&gt; lt <span class="variable">&lt;expr4&gt;</span> <span class="variable">&lt;expr5&gt;</span>;
+<span class="variable">&lt;expr4&gt;</span> ::= <span class="variable">&lt;expr4&gt;</span> ge <span class="variable">&lt;expr5&gt;</span>                  =&gt; ge <span class="variable">&lt;expr4&gt;</span> <span class="variable">&lt;expr5&gt;</span>;
+<span class="variable">&lt;expr4&gt;</span> ::= <span class="variable">&lt;expr4&gt;</span> le <span class="variable">&lt;expr5&gt;</span>                  =&gt; le <span class="variable">&lt;expr4&gt;</span> <span class="variable">&lt;expr5&gt;</span>;
+<span class="variable">&lt;expr4&gt;</span> ::= <span class="variable">&lt;expr5&gt;</span>;
+<span class="variable">&lt;expr5&gt;</span> ::= <span class="variable">&lt;expr5&gt;</span> add <span class="variable">&lt;expr6&gt;</span>                 =&gt; add <span class="variable">&lt;expr5&gt;</span> <span class="variable">&lt;expr6&gt;</span>;
+<span class="variable">&lt;expr5&gt;</span> ::= <span class="variable">&lt;expr5&gt;</span> sub <span class="variable">&lt;expr6&gt;</span>                 =&gt; sub <span class="variable">&lt;expr5&gt;</span> <span class="variable">&lt;expr6&gt;</span>;
+<span class="variable">&lt;expr5&gt;</span> ::= <span class="variable">&lt;expr6&gt;</span>;
+<span class="variable">&lt;expr6&gt;</span> ::= <span class="variable">&lt;expr6&gt;</span> mul <span class="variable">&lt;expr7&gt;</span>                 =&gt; mul <span class="variable">&lt;expr6&gt;</span> <span class="variable">&lt;expr7&gt;</span>;
+<span class="variable">&lt;expr6&gt;</span> ::= <span class="variable">&lt;expr6&gt;</span> div <span class="variable">&lt;expr7&gt;</span>                 =&gt; div <span class="variable">&lt;expr6&gt;</span> <span class="variable">&lt;expr7&gt;</span>;
+<span class="variable">&lt;expr6&gt;</span> ::= <span class="variable">&lt;expr6&gt;</span> mod <span class="variable">&lt;expr7&gt;</span>                 =&gt; mod <span class="variable">&lt;expr6&gt;</span> <span class="variable">&lt;expr7&gt;</span>;
+<span class="variable">&lt;expr6&gt;</span> ::= <span class="variable">&lt;expr7&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= not <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= s_minus <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= inc <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= dec <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= typeof <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= new <span class="variable">&lt;expr8&gt;</span> lparen <span class="variable">&lt;params&gt;</span> rparen =&gt; new <span class="variable">&lt;expr8&gt;</span> <span class="variable">&lt;params&gt;</span>;
+<span class="variable">&lt;expr7&gt;</span> ::= <span class="variable">&lt;expr8&gt;</span>;
+<span class="variable">&lt;expr8&gt;</span> ::= <span class="variable">&lt;expr8&gt;</span> dot ident                   =&gt; dot <span class="variable">&lt;expr8&gt;</span> ident;
+<span class="variable">&lt;expr8&gt;</span> ::= lparen <span class="variable">&lt;expr&gt;</span> rparen                =&gt; <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;expr8&gt;</span> ::= <span class="variable">&lt;expr8&gt;</span> lsqr <span class="variable">&lt;expr&gt;</span> rsqr            =&gt; array <span class="variable">&lt;expr8&gt;</span> <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;expr8&gt;</span> ::= <span class="variable">&lt;expr8&gt;</span> lparen <span class="variable">&lt;params&gt;</span> rparen      =&gt; funcall <span class="variable">&lt;expr8&gt;</span> <span class="variable">&lt;params&gt;</span>;
+<span class="variable">&lt;params&gt;</span> ::= <span class="variable">&lt;expr&gt;</span> comma <span class="variable">&lt;params&gt;</span>;
+<span class="variable">&lt;params&gt;</span> ::= <span class="variable">&lt;expr&gt;</span> ;
+<span class="variable">&lt;params&gt;</span> ::= NULL;
+<span class="variable">&lt;expr8&gt;</span> ::= lcurly <span class="variable">&lt;params&gt;</span> rcurly;
+<span class="variable">&lt;expr8&gt;</span> ::= float;
+<span class="variable">&lt;expr8&gt;</span> ::= ident;
+<span class="variable">&lt;expr8&gt;</span> ::= integer;
+<span class="variable">&lt;expr8&gt;</span> ::= string;
+<span class="variable">&lt;expr8&gt;</span> ::= function lparen <span class="variable">&lt;param_list&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt; lambda <span class="variable">&lt;param_list&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+<span class="variable">&lt;for_block&gt;</span> ::= <span class="keyword">for</span> lparen <span class="variable">&lt;nullable_expr&gt;</span> semicolon <span class="variable">&lt;nullable_expr&gt;</span> semicolon <span class="variable">&lt;nullable_expr&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;nullable_expr&gt;</span> <span class="variable">&lt;nullable_expr&gt;</span> <span class="variable">&lt;nullable_expr&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+<span class="variable">&lt;nullable_expr&gt;</span> ::= <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;nullable_expr&gt;</span> ::= NULL;
+<span class="variable">&lt;while_block&gt;</span> ::= while lparen <span class="variable">&lt;expr&gt;</span> rparen lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+<span class="variable">&lt;try_block&gt;</span> ::= try lcurly <span class="variable">&lt;hooked_statements&gt;</span> rcurly catch lparen ident rparen
+    lcurly <span class="variable">&lt;hooked_statements&gt;</span> rcurly finally lcurly <span class="variable">&lt;statements&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;hooked_statements&gt;</span> ident <span class="variable">&lt;hooked_statements&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+%equiv <span class="variable">&lt;statements&gt;</span> <span class="variable">&lt;hooked_statements&gt;</span>;
+<span class="variable">&lt;hooked_statements&gt;</span> ::= <span class="variable">&lt;hooked_statement&gt;</span> <span class="variable">&lt;hooked_statements&gt;</span>;
+<span class="variable">&lt;hooked_statements&gt;</span> ::= NULL;
+%equiv <span class="variable">&lt;statement&gt;</span> <span class="variable">&lt;hooked_statement&gt;</span> <span class="variable">&lt;hooked_fc_statement&gt;</span>;
+<span class="variable">&lt;hooked_statement&gt;</span> ::= <span class="variable">&lt;flow_statement&gt;</span>;
+<span class="variable">&lt;hooked_statement&gt;</span> ::= <span class="variable">&lt;expr_statement&gt;</span>;
+<span class="variable">&lt;hooked_statement&gt;</span> ::= <span class="variable">&lt;hooked_fc_statement&gt;</span>;
+<span class="variable">&lt;hooked_statement&gt;</span> ::= <span class="variable">&lt;throw_exception&gt;</span>;
+<span class="variable">&lt;hooked_fc_statement&gt;</span> ::= <span class="variable">&lt;hooked_return_val&gt;</span>;
+<span class="variable">&lt;hooked_fc_statement&gt;</span> ::= <span class="variable">&lt;hooked_return_void&gt;</span>;
+<span class="variable">&lt;hooked_fc_statement&gt;</span> ::= <span class="variable">&lt;hooked_break&gt;</span>;
+<span class="variable">&lt;hooked_fc_statement&gt;</span> ::= <span class="variable">&lt;hooked_continue&gt;</span>;
+<span class="variable">&lt;hooked_return_val&gt;</span> ::= return <span class="variable">&lt;expr&gt;</span> semicolon =&gt; <span class="variable">&lt;expr&gt;</span>;
+<span class="variable">&lt;hooked_return_void&gt;</span> ::= return semicolon;
+<span class="variable">&lt;hooked_break&gt;</span> ::= break semicolon;
+<span class="variable">&lt;hooked_continue&gt;</span> ::= continue semicolon;
+<span class="variable">&lt;switch_block&gt;</span> ::= switch lparen <span class="variable">&lt;expr&gt;</span> rparen lcurly <span class="variable">&lt;switch_cases&gt;</span> <span class="variable">&lt;default_case&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;switch_cases&gt;</span> <span class="variable">&lt;default_case&gt;</span>;
+<span class="variable">&lt;switch_block&gt;</span> ::= switch lparen <span class="variable">&lt;expr&gt;</span> rparen lcurly <span class="variable">&lt;switch_cases&gt;</span> rcurly
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;switch_cases&gt;</span>;
+%array <span class="variable">&lt;switch_cases&gt;</span>;
+<span class="variable">&lt;switch_cases&gt;</span> ::= <span class="variable">&lt;switch_case&gt;</span> <span class="variable">&lt;switch_cases&gt;</span>;
+<span class="variable">&lt;switch_cases&gt;</span> ::= NULL;
+<span class="variable">&lt;switch_case&gt;</span> ::= case <span class="variable">&lt;expr&gt;</span> colon <span class="variable">&lt;statements&gt;</span>
+    =&gt; <span class="variable">&lt;expr&gt;</span> <span class="variable">&lt;statements&gt;</span>;
+<span class="variable">&lt;default_case&gt;</span> ::= <span class="keyword">default</span> colon <span class="variable">&lt;statements&gt;</span>
+    =&gt; <span class="variable">&lt;statements&gt;</span>;
+</code></pre>
+    </section>
+
+    
+  </article>
+
+
+            <footer class="footer">
+	<span class="footer__copyright">
+		本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/deed.zh">知识共享署名-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+	</span>
+    <span class="footer__copyright"><a href="http://uno.daleanthony.com" title="link to page for Uno Ghost theme">Uno theme</a> by <a href="http://daleanthony.com" title="link to website for Dale-Anthony">Dale-Anthony</a> | Redesign by <a href="http://letiantian.me" title="">樂天</a> | Customized by wssccc</span>
+</footer>
+        </div>
+    </div>
+
+    <!-- The main JavaScript file for Casper -->
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    <script src="/js/jquery.imagesloaded.min.js"></script>
+    <script src="/js/gallery.js"></script>
+    <script src="/js/jquery.githubRepoWidget.min.js"></script>
+
+    <!--kill ie6 -->
+    <!--[if IE 6]>
+      <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+    <![endif]-->
+
+    <!--  google analytics -->
+    <script>
+      // add your google analytics code here
+    </script>
+
+    <!-- totop -->
+    <div id="totop" style="position:fixed;bottom:50px;right:30px;cursor: pointer;">
+    <a title="back to top"><img style="width:30px;height:30px;" src="/images/totop.png"/></a>
+    </div>
+    <script>
+    (function($) { 
+      var upperLimit = 100;
+      var scrollElem = $('#totop');
+      var scrollSpeed = 500; 
+      scrollElem.hide();
+      $(window).scroll(function () {            
+        var scrollTop = $(document).scrollTop();       
+        if ( scrollTop > upperLimit ) {
+          $(scrollElem).stop().fadeTo(300, 1); // fade back in           
+        }else{       
+          $(scrollElem).stop().fadeTo(300, 0); // fade out
+        }
+      });
+      $(scrollElem).click(function(){
+        $('html, body').animate({scrollTop:0}, scrollSpeed); return false;
+      });
+    })(jQuery);
+    </script>
+
+    <!-- fancybox -->
+    
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+    <script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript">
+      (function($){
+        $('.fancybox').fancybox();
+      })(jQuery);
+    </script>
+    
+
+</body>
+</html>

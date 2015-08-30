@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    
+
+    <title>
+      ngscript之一：词法分析 | wssccc 
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+      <meta name="author" content="wssccc">
+    
+    
+      <meta name="description" content="正则表达式的理论基础可以参考装配脑袋的
+
+这个 自己动手开发编译器（二）正则语言和正则表达式
+这个 自己动手开发编译器（三）有穷自动机
+还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
+
+词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
+Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+    
+
+    <meta name="description" content="正则表达式的理论基础可以参考装配脑袋的
+
+这个 自己动手开发编译器（二）正则语言和正则表达式
+这个 自己动手开发编译器（三）有穷自动机
+还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
+
+词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
+Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ngscript之一：词法分析 | wssccc">
+<meta property="og:url" content="http://blog.ngscript.org/2014/03/04/ngscript-part-2/index.html">
+<meta property="og:site_name" content="wssccc">
+<meta property="og:description" content="正则表达式的理论基础可以参考装配脑袋的
+
+这个 自己动手开发编译器（二）正则语言和正则表达式
+这个 自己动手开发编译器（三）有穷自动机
+还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
+
+词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
+Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+<meta property="og:updated_time" content="2015-08-30T16:21:38.511Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ngscript之一：词法分析 | wssccc">
+<meta name="twitter:description" content="正则表达式的理论基础可以参考装配脑袋的
+
+这个 自己动手开发编译器（二）正则语言和正则表达式
+这个 自己动手开发编译器（三）有穷自动机
+还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
+
+词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
+Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+    
+    
+    
+      <link rel="icon" type="image/x-icon" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/css/highlight.css" type="text/css">
+    <link rel="stylesheet" href="/css/uno.css" type="text/css">
+
+    <script src="/js/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="icon icon-list btn-mobile-menu__icon"></i>
+        <i class="icon icon-x-circle btn-mobile-close__icon hidden"></i>
+    </span>
+
+    
+
+<header class="panel-cover panel-cover--collapsed">
+
+
+
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        
+        <a href="/" title="link to homepage for wssccc"><img src="/avatar.jpg" width="80" alt="wssccc logo" class="panel-cover__logo logo" /></a>
+        
+
+        <h1 class="panel-cover__title panel-title"><a href="/" title="link to homepage">wssccc</a></h1>
+
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">
+          我们在世纪末的流光中追寻过往，追寻那些渐渐模糊的面容
+        </p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+
+        <div class="navigation-wrapper">
+
+          <nav class="cover-navigation cover-navigation--primary">
+            <ul class="navigation">
+
+              
+                
+                <li class="navigation__item"><a href="/#blog" title="" class="blog-button">博客</a></li>
+              
+                
+                <li class="navigation__item"><a href="/about" title="" class="">关于</a></li>
+              
+                
+                <li class="navigation__item"><a href="/blogroll" title="" class="">链接</a></li>
+              
+
+            </ul>
+          </nav>
+
+          <!-- ----------------------------
+To add a new social icon simply duplicate one of the list items from below
+and change the class in the <i> tag to match the desired social network
+and then add your link to the <a>. Here is a full list of social network
+classes that you can use:
+
+    icon-social-500px
+    icon-social-behance
+    icon-social-delicious
+    icon-social-designer-news
+    icon-social-deviant-art
+    icon-social-digg
+    icon-social-dribbble
+    icon-social-facebook
+    icon-social-flickr
+    icon-social-forrst
+    icon-social-foursquare
+    icon-social-github
+    icon-social-google-plus
+    icon-social-hi5
+    icon-social-instagram
+    icon-social-lastfm
+    icon-social-linkedin
+    icon-social-medium
+    icon-social-myspace
+    icon-social-path
+    icon-social-pinterest
+    icon-social-rdio
+    icon-social-reddit
+    icon-social-skype
+    icon-social-spotify
+    icon-social-stack-overflow
+    icon-social-steam
+    icon-social-stumbleupon
+    icon-social-treehouse
+    icon-social-tumblr
+    icon-social-twitter
+    icon-social-vimeo
+    icon-social-xbox
+    icon-social-yelp
+    icon-social-youtube
+    icon-social-zerply
+    icon-mail
+
+------------------------------ -->
+
+<nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/wssccc" title="wssccc on GitHub">
+      <i class='icon icon-social-github'></i>
+      <span class="label">GitHub</span>
+    </a>
+  </li>
+
+  </ul>
+</nav>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel-cover--overlay"></div>
+  </div>
+</header>
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner entry">
+            
+
+  <article class="post-container post-container--single">
+
+    <header class="post-header">
+    
+      
+      <div class="post-meta">
+        <time datetime="2014-03-04" class="post-meta__date date">2014-03-04</time> &#8226; 
+
+        <span class="post-meta__tags tags">
+
+            <font class="categories">
+              
+            </font>
+            
+              <font class="tags">
+                <a class="tags-link" href="/tags/ngscript/">ngscript</a>, <a class="tags-link" href="/tags/词法分析/">词法分析</a>, <a class="tags-link" href="/tags/语言/">语言</a>
+              </font>
+            
+
+        </span>
+      </div>
+      
+
+      <h1 class="post-title">ngscript之一：词法分析</h1>
+    </header>
+
+    <section class="post">
+      <p>正则表达式的理论基础可以参考<a href="http://home.cnblogs.com/u/Ninputer/" target="_blank" rel="external">装配脑袋</a>的</p>
+<ul>
+<li>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html" target="_blank" rel="external">自己动手开发编译器（二）正则语言和正则表达式</a></li>
+<li>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html" target="_blank" rel="external">自己动手开发编译器（三）有穷自动机</a></li>
+<li>还有这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a><br>如果学过编译原理的课程就更好了。</li>
+</ul>
+<p>词法分析用到了我写的一个工具lexeroid。<br>下面说一些我写lexeroid时候遇到的问题。</p>
+<h2 id="Unicode">Unicode</h2><p>在装配脑袋的<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a> 中，提到了等价类处理Unicode的方法。<br>我做了一些改进。<br>在lexeroid中，所有的已定义字符都会注册，等Regex定义完成，开始生成DFA之前，会把所有的Any转换为undefined和每个已注册类。<br>如果定义的逻辑是not，则会在替换的时候排除掉这些字符。<br>这样就没有lexeroid之前的冲突处理过程了。 </p>
+<h2 id="最长匹配">最长匹配</h2><p>这个很多书上应该介绍过，就是设置一个lastFinal一样的东西，然后在DFA停机的时候把最后一个正确匹配的取出来。</p>
+<h2 id="NFA的组织">NFA的组织</h2><p>最开始我做的是把每个token的NFA分开，存成一个数组，然后每个生成DFA之后，在词法分析的时候一个一个去测试。后来发现这个似乎和用Java内置的正则表达式没什么区别。而且有一个问题是，token定义的顺序要十分小心，因为先定义的token会被优先匹配到。<br>后来我试了另外一种方法，就是等所有token生成NFA完之后，添加一个入口，用epsilon边把所有的NFA连起来形成一个大NFA，然后再用它生成的DFA去匹配。</p>
+<h2 id="最后">最后</h2><p>lexeroid定义token时大概是这个样子(目前lexeroid已经支持从字符串parse出Regex)<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">LexerBuilder builder = <span class="keyword">new</span> LexerBuilder();</span><br><span class="line">builder.defineToken(<span class="string">"if"</span>, Re.string(<span class="string">"if"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"return"</span>, Re.string(<span class="string">"return"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"else"</span>, Re.string(<span class="string">"else"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"ident"</span>, Re.concat(</span><br><span class="line">        Re.or(Re.letter(), Re.chr(<span class="string">'_'</span>)),</span><br><span class="line">        Re.many(Re.or(Re.or(Re.letter(), Re.chr(<span class="string">'_'</span>)), Re.digit()))</span><br><span class="line">));</span><br><span class="line">builder.defineToken(<span class="string">"string"</span>,</span><br><span class="line">        Re.concat(Re.chr(<span class="string">'"'</span>), Re.many(Re.char1()), Re.chr(<span class="string">'"'</span>))</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//此处省略N行</span></span><br><span class="line">  <span class="keyword">return</span> builder.build();</span><br></pre></td></tr></table></figure></p>
+<p>代码可以从这里找到</p>
+<p><a href="https://github.com/wssccc/lexeroid.git" target="_blank" rel="external">https://github.com/wssccc/lexeroid.git</a></p>
+<p>作为一个词法分析器，后面的文章中还会用到它。</p>
+<p>相关资料</p>
+<ul>
+<li><a href="http://www.cnblogs.com/geniusvczh/p/3577561.html" target="_blank" rel="external">跟vczh看实例学编译原理——二：实现Tinymoe的词法分析</a></li>
+<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html" target="_blank" rel="external">自己动手开发编译器（二）正则语言和正则表达式</a></li>
+<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html" target="_blank" rel="external">自己动手开发编译器（三）有穷自动机</a></li>
+<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a></li>
+</ul>
+
+    </section>
+
+    
+  </article>
+
+
+            <footer class="footer">
+	<span class="footer__copyright">
+		本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/deed.zh">知识共享署名-禁止演绎 3.0 未本地化版本许可协议</a>进行许可。
+	</span>
+    <span class="footer__copyright"><a href="http://uno.daleanthony.com" title="link to page for Uno Ghost theme">Uno theme</a> by <a href="http://daleanthony.com" title="link to website for Dale-Anthony">Dale-Anthony</a> | Redesign by <a href="http://letiantian.me" title="">樂天</a> | Customized by wssccc</span>
+</footer>
+        </div>
+    </div>
+
+    <!-- The main JavaScript file for Casper -->
+    <script src="/js/main.js"></script>
+    <script src="/js/scale.fix.js"></script>
+    <script src="/js/jquery.imagesloaded.min.js"></script>
+    <script src="/js/gallery.js"></script>
+    <script src="/js/jquery.githubRepoWidget.min.js"></script>
+
+    <!--kill ie6 -->
+    <!--[if IE 6]>
+      <script src="//letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
+    <![endif]-->
+
+    <!--  google analytics -->
+    <script>
+      // add your google analytics code here
+    </script>
+
+    <!-- totop -->
+    <div id="totop" style="position:fixed;bottom:50px;right:30px;cursor: pointer;">
+    <a title="back to top"><img style="width:30px;height:30px;" src="/images/totop.png"/></a>
+    </div>
+    <script>
+    (function($) { 
+      var upperLimit = 100;
+      var scrollElem = $('#totop');
+      var scrollSpeed = 500; 
+      scrollElem.hide();
+      $(window).scroll(function () {            
+        var scrollTop = $(document).scrollTop();       
+        if ( scrollTop > upperLimit ) {
+          $(scrollElem).stop().fadeTo(300, 1); // fade back in           
+        }else{       
+          $(scrollElem).stop().fadeTo(300, 0); // fade out
+        }
+      });
+      $(scrollElem).click(function(){
+        $('html, body').animate({scrollTop:0}, scrollSpeed); return false;
+      });
+    })(jQuery);
+    </script>
+
+    <!-- fancybox -->
+    
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+    <script src="/fancybox/jquery.fancybox.pack.js"></script>
+    <script type="text/javascript">
+      (function($){
+        $('.fancybox').fancybox();
+      })(jQuery);
+    </script>
+    
+
+</body>
+</html>
