@@ -487,7 +487,13 @@ classes that you can use:
 
     <!--  google analytics -->
     <script>
-      // add your google analytics code here
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?073d8038aa5b2847ba7f6fab8791b09f";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
     </script>
 
     <!-- totop -->
