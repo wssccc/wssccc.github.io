@@ -1345,7 +1345,7 @@ hr {
 
 .btn-mobile-menu {
   display: none;
-  position: fixed;
+  /*position: fixed;*/
   z-index: 9999;
   top: 0;
   right: 0;
@@ -1628,8 +1628,8 @@ input[type="tel"] {
 
   .navigation-wrapper {
     display: none;
-    position: fixed;
-    top: 42px;
+    position: absolute;
+    top: 0px;
     right: 0;
     left: 0;
     width: 100%;
