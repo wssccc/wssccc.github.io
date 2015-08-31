@@ -1203,6 +1203,7 @@ hr {
   -webkit-font-smoothing: antialiased; }
 
 .panel-cover {
+  top: 0px;
   display: block;
   position: fixed;
   z-index: 900;
