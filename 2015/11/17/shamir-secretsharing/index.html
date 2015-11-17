@@ -11,7 +11,7 @@
     
 
     <title>
-      ngscript之一：词法分析 | wssccc 
+      简明Shamir门限方案 | wssccc 
     </title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1.0, user-scalable=no">
@@ -19,47 +19,31 @@
       <meta name="author" content="wssccc">
     
     
-      <meta name="description" content="正则表达式的理论基础可以参考装配脑袋的
-
-这个 自己动手开发编译器（二）正则语言和正则表达式
-这个 自己动手开发编译器（三）有穷自动机
-还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
-
-词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
-Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+      <meta name="description" content="使用场景一个密码箱的密码需要分成多个部分，由不同的人保存，只有大于一定数量的人联合起来，才能开启密码箱。
+例子vault使用了Shamir密钥共享算法来把master key分成多个保存，只有多于threshold个数的key shares才能还原出master key。
+原理定义秘密S分成n个子秘密，任意k个可以重建S，k-1个不能重建S。
+生成Key Shares$a_0=S$，取随机数 $a">
     
 
-    <meta name="description" content="正则表达式的理论基础可以参考装配脑袋的
-
-这个 自己动手开发编译器（二）正则语言和正则表达式
-这个 自己动手开发编译器（三）有穷自动机
-还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
-
-词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
-Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+    <meta name="description" content="使用场景一个密码箱的密码需要分成多个部分，由不同的人保存，只有大于一定数量的人联合起来，才能开启密码箱。
+例子vault使用了Shamir密钥共享算法来把master key分成多个保存，只有多于threshold个数的key shares才能还原出master key。
+原理定义秘密S分成n个子秘密，任意k个可以重建S，k-1个不能重建S。
+生成Key Shares$a_0=S$，取随机数 $a">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ngscript之一：词法分析 | wssccc">
-<meta property="og:url" content="http://blog.ngscript.org/2014/03/04/ngscript-part-2/index.html">
+<meta property="og:title" content="简明Shamir门限方案 | wssccc">
+<meta property="og:url" content="http://blog.ngscript.org/2015/11/17/shamir-secretsharing/index.html">
 <meta property="og:site_name" content="wssccc">
-<meta property="og:description" content="正则表达式的理论基础可以参考装配脑袋的
-
-这个 自己动手开发编译器（二）正则语言和正则表达式
-这个 自己动手开发编译器（三）有穷自动机
-还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
-
-词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
-Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
-<meta property="og:updated_time" content="2015-08-30T16:21:38.511Z">
+<meta property="og:description" content="使用场景一个密码箱的密码需要分成多个部分，由不同的人保存，只有大于一定数量的人联合起来，才能开启密码箱。
+例子vault使用了Shamir密钥共享算法来把master key分成多个保存，只有多于threshold个数的key shares才能还原出master key。
+原理定义秘密S分成n个子秘密，任意k个可以重建S，k-1个不能重建S。
+生成Key Shares$a_0=S$，取随机数 $a">
+<meta property="og:updated_time" content="2015-11-17T11:51:01.455Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ngscript之一：词法分析 | wssccc">
-<meta name="twitter:description" content="正则表达式的理论基础可以参考装配脑袋的
-
-这个 自己动手开发编译器（二）正则语言和正则表达式
-这个 自己动手开发编译器（三）有穷自动机
-还有这个 自己动手开发编译器（四）利用DFA转换表建立扫描器如果学过编译原理的课程就更好了。
-
-词法分析用到了我写的一个工具lexeroid。下面说一些我写lexeroid时候遇到的问题。
-Unicode在装配脑袋的自己动手开发编译器（四）利用DFA转换表建立扫描">
+<meta name="twitter:title" content="简明Shamir门限方案 | wssccc">
+<meta name="twitter:description" content="使用场景一个密码箱的密码需要分成多个部分，由不同的人保存，只有大于一定数量的人联合起来，才能开启密码箱。
+例子vault使用了Shamir密钥共享算法来把master key分成多个保存，只有多于threshold个数的key shares才能还原出master key。
+原理定义秘密S分成n个子秘密，任意k个可以重建S，k-1个不能重建S。
+生成Key Shares$a_0=S$，取随机数 $a">
     
     
     
@@ -201,7 +185,7 @@ classes that you can use:
     
       
       <div class="post-meta">
-        <time datetime="2014-03-04" class="post-meta__date date">2014-03-04</time> &#8226; 
+        <time datetime="2015-11-17" class="post-meta__date date">2015-11-17</time> &#8226; 
 
         <span class="post-meta__tags tags">
 
@@ -210,7 +194,7 @@ classes that you can use:
             </font>
             
               <font class="tags">
-                <a class="tags-link" href="/tags/ngscript/">ngscript</a>, <a class="tags-link" href="/tags/词法分析/">词法分析</a>, <a class="tags-link" href="/tags/语言/">语言</a>
+                <a class="tags-link" href="/tags/密码-计算机/">密码 计算机</a>
               </font>
             
 
@@ -218,32 +202,24 @@ classes that you can use:
       </div>
       
 
-      <h1 class="post-title">ngscript之一：词法分析</h1>
+      <h1 class="post-title">简明Shamir门限方案</h1>
     </header>
 
     <section class="post">
-      <p>正则表达式的理论基础可以参考<a href="http://home.cnblogs.com/u/Ninputer/" target="_blank" rel="external">装配脑袋</a>的</p>
-<ul>
-<li>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html" target="_blank" rel="external">自己动手开发编译器（二）正则语言和正则表达式</a></li>
-<li>这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html" target="_blank" rel="external">自己动手开发编译器（三）有穷自动机</a></li>
-<li>还有这个 <a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a><br>如果学过编译原理的课程就更好了。</li>
-</ul>
-<p>词法分析用到了我写的一个工具lexeroid。<br>下面说一些我写lexeroid时候遇到的问题。</p>
-<h2 id="Unicode">Unicode</h2><p>在装配脑袋的<a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a> 中，提到了等价类处理Unicode的方法。<br>我做了一些改进。<br>在lexeroid中，所有的已定义字符都会注册，等Regex定义完成，开始生成DFA之前，会把所有的Any转换为undefined和每个已注册类。<br>如果定义的逻辑是not，则会在替换的时候排除掉这些字符。<br>这样就没有lexeroid之前的冲突处理过程了。 </p>
-<h2 id="最长匹配">最长匹配</h2><p>这个很多书上应该介绍过，就是设置一个lastFinal一样的东西，然后在DFA停机的时候把最后一个正确匹配的取出来。</p>
-<h2 id="NFA的组织">NFA的组织</h2><p>最开始我做的是把每个token的NFA分开，存成一个数组，然后每个生成DFA之后，在词法分析的时候一个一个去测试。后来发现这个似乎和用Java内置的正则表达式没什么区别。而且有一个问题是，token定义的顺序要十分小心，因为先定义的token会被优先匹配到。<br>后来我试了另外一种方法，就是等所有token生成NFA完之后，添加一个入口，用epsilon边把所有的NFA连起来形成一个大NFA，然后再用它生成的DFA去匹配。</p>
-<h2 id="最后">最后</h2><p>lexeroid定义token时大概是这个样子(目前lexeroid已经支持从字符串parse出Regex)<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">LexerBuilder builder = <span class="keyword">new</span> LexerBuilder();</span><br><span class="line">builder.defineToken(<span class="string">"if"</span>, Re.string(<span class="string">"if"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"return"</span>, Re.string(<span class="string">"return"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"else"</span>, Re.string(<span class="string">"else"</span>));</span><br><span class="line">builder.defineToken(<span class="string">"ident"</span>, Re.concat(</span><br><span class="line">        Re.or(Re.letter(), Re.chr(<span class="string">'_'</span>)),</span><br><span class="line">        Re.many(Re.or(Re.or(Re.letter(), Re.chr(<span class="string">'_'</span>)), Re.digit()))</span><br><span class="line">));</span><br><span class="line">builder.defineToken(<span class="string">"string"</span>,</span><br><span class="line">        Re.concat(Re.chr(<span class="string">'"'</span>), Re.many(Re.char1()), Re.chr(<span class="string">'"'</span>))</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//此处省略N行</span></span><br><span class="line">  <span class="keyword">return</span> builder.build();</span><br></pre></td></tr></table></figure></p>
-<p>代码可以从这里找到</p>
-<p><a href="https://github.com/wssccc/lexeroid.git" target="_blank" rel="external">https://github.com/wssccc/lexeroid.git</a></p>
-<p>作为一个词法分析器，后面的文章中还会用到它。</p>
-<p>相关资料</p>
-<ul>
-<li><a href="http://www.cnblogs.com/geniusvczh/p/3577561.html" target="_blank" rel="external">跟vczh看实例学编译原理——二：实现Tinymoe的词法分析</a></li>
-<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/08/2075714.html" target="_blank" rel="external">自己动手开发编译器（二）正则语言和正则表达式</a></li>
-<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/10/2077991.html" target="_blank" rel="external">自己动手开发编译器（三）有穷自动机</a></li>
-<li><a href="http://www.cnblogs.com/Ninputer/archive/2011/06/12/2078671.html" target="_blank" rel="external">自己动手开发编译器（四）利用DFA转换表建立扫描器</a></li>
-</ul>
-
+      <h2 id="使用场景">使用场景</h2><p>一个密码箱的密码需要分成多个部分，由不同的人保存，只有大于一定数量的人联合起来，才能开启密码箱。</p>
+<h2 id="例子">例子</h2><p><a href="https://vaultproject.io/docs/internals/architecture.html" target="_blank" rel="external">vault</a>使用了Shamir密钥共享算法来把master key分成多个保存，只有多于threshold个数的key shares才能还原出master key。</p>
+<h2 id="原理">原理</h2><h3 id="定义">定义</h3><p>秘密S分成n个子秘密，任意k个可以重建S，k-1个不能重建S。</p>
+<h3 id="生成Key_Shares">生成Key Shares</h3><p>$a_0=S$，取随机数 $a_1 \cdots a_{k-1}$</p>
+<p>构造多项式 $f(x) = a_0 + a_1x … + a_{k-1}x^{k-1}$</p>
+<p>取随机数 $x_1 \cdots x_n$，代入多项式$f(x)$，得到$f(x_1) \cdots f(x_n)$</p>
+<p>$(x_1,f(x_1)) \cdots (x_n,f(x_n))$ 即为生成的key shares。</p>
+<h3 id="还原Key">还原Key</h3><p>任取k个key shares，代入多项式<br>$$a_0 + a_1x_1 + … + a_{k-1}x_1^{k-1} = y_1$$$$a_0 + a_1x_2 + … + a_{k-1}x_2^{k-1} = y_2$$$$…$$$$a_0 + a_1x_k + … + a_{k-1}x_k^{k-1} = y_k$$</p>
+<p>表示为矩阵形式</p>
+<p>$$\begin{pmatrix}<br>  1&amp;        x_1&amp;    \cdots&amp;        x_1^{k-1}    \\<br>  1&amp;        x_2&amp;    \cdots&amp;        x_2^{k-1}     \\<br>  \vdots&amp;    \vdots&amp;    \ddots&amp;        \vdots        \\<br>  1&amp;        x_k&amp;    \vdots&amp;        x_k^{k-1}    \\<br>\end{pmatrix}<br>\begin{pmatrix}<br>  a_0        \\<br>  a_1        \\<br>  \vdots    \\<br>  a_{k-1}    \\<br>\end{pmatrix}<br>=<br>\begin{pmatrix}<br>  y_1        \\<br>  y_2        \\<br>  \vdots    \\<br>  y_k        \\<br>\end{pmatrix}<br>$$</p>
+<p>$$\downarrow$$</p>
+<p>$$\begin{pmatrix}<br>  a_0        \\<br>  a_1        \\<br>  \vdots    \\<br>  a_{k-1}    \\<br>\end{pmatrix}<br>=<br>\begin{pmatrix}<br>  1&amp;        x_1&amp;    \cdots&amp;        x_1^{k-1}    \\<br>  1&amp;        x_2&amp;    \cdots&amp;        x_2^{k-1}     \\<br>  \vdots&amp;    \vdots&amp;    \ddots&amp;        \vdots        \\<br>  1&amp;        x_k&amp;    \vdots&amp;        x_k^{k-1}    \\<br>\end{pmatrix}^{-1}<br>\begin{pmatrix}<br>  y_1        \\<br>  y_2        \\<br>  \vdots    \\<br>  y_k        \\<br>\end{pmatrix}<br>$$</p>
+<p>求得$a_0 \cdots a_{k-1}$，$S=a_0$即为原Key。</p>
+<h2 id="相关库">相关库</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">groupId</span>&gt;</span>com.tiemens<span class="tag">&lt;/<span class="title">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">artifactId</span>&gt;</span>secretshare<span class="tag">&lt;/<span class="title">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">version</span>&gt;</span>1.4.2<span class="tag">&lt;/<span class="title">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="title">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
     </section>
 
     
@@ -251,7 +227,7 @@ classes that you can use:
 
 <section id="comments">
   <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="ngscript-part-2/" data-title="ngscript之一：词法分析"></div>
+  <div class="ds-thread" data-thread-key="shamir-secretsharing/" data-title="简明Shamir门限方案"></div>
   <!-- 多说评论框 end -->
   <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
   <script type="text/javascript">
